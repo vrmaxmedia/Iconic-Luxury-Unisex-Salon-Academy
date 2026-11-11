@@ -1,82 +1,81 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-// =====================================================================
-// CLIENT CONFIGURATION (Iconic Luxury Unisex Salon and Academy)
-// =====================================================================
-
-const GOOGLE_REVIEW_URL =
-  "https://search.google.com/local/writereview?placeid=ChIJayhIUu9FkTkRD48y-d5wBjQ";
-
+/* =====================================================================
+   ICONIC LUXURY UNISEX SALON & ACADEMY — PAGE CONFIG
+   Background intentionally transparent: add your own background image
+   in the parent layout/body. Salon API chip labels must match route.js.
+   ===================================================================== */
 const CLIENT_CONFIG = {
-  businessName: "Iconic Luxury Unisex Salon and Academy",
-  subHeading: "Luxury Beauty · Style · Confidence",
-  tagline: "LUXURY UNISEX SALON & MAKEUP ARTIST • GOLGHAR, GORAKHPUR",
+  businessName: "Iconic Luxury Unisex Salon & Academy",
+  subHeading: "Unisex Salon & Makeup Artist in Golghar, Gorakhpur",
+  category: "Unisex Salon & Makeup Artist",
   description:
-    "A unisex salon and makeup destination located at Mangalam Tower, Golghar, Gorakhpur, offering salon, hairstyling and makeup services. The business also identifies as a beauty and salon academy.",
+    "A unisex salon and makeup destination in Golghar, Gorakhpur.",
   city: "Golghar, Gorakhpur, Uttar Pradesh",
   areaLabel: "Golghar, Gorakhpur",
-  fullAddress:
-    "Mangalam Tower, Golghar, Gorakhpur, Uttar Pradesh 273001",
-  phone: "+9109580997664",
-  cleanPhone: "09580997664",
+  fullAddress: "Golghar, near Mangalam Tower, Gorakhpur, Uttar Pradesh",
   logoUrl: "/logo.png",
 
-  googleReviewUrl: GOOGLE_REVIEW_URL,
-  mapsDirectionUrl:
-    "https://www.google.com/maps/search/?api=1&query=Iconic+Luxury+Unisex+Salon+and+Academy+Mangalam+Tower+Golghar+Gorakhpur",
+  // CID opens the salon's Google Business Profile. Replace with the
+  // direct Place ID review URL when the verified Place ID is available.
+  googleReviewUrl: "https://maps.google.com/?cid=3748807842798407439",
+  mapsDirectionUrl: "https://maps.google.com/?cid=3748807842798407439",
+  mapSearch:
+    "Iconic Luxury Unisex Salon & Academy, Golghar, near Mangalam Tower, Gorakhpur, Uttar Pradesh",
 
+  // Contact/social buttons stay hidden until genuine details are added.
+  phone: "",
+  cleanPhone: "",
   instagramUrl: "",
   facebookUrl: "",
   youtubeUrl: "",
-  websiteUrl: "",
-  whatsappChannelUrl: "",
 
   agencyName: "VR Max AI",
   agencyWhatsapp: "918700660097",
   agencyPhoneDisplay: "+91 87006 60097",
 
-  customInstruction:
-    "Write a natural, honest Google Maps review for Iconic Luxury Unisex Salon and Academy in Golghar, Gorakhpur. The business is a unisex salon and makeup destination. Keep the review conversational and based only on the selected experience. Do not invent specific treatments, packages, products, prices, discounts, bridal bookings, training courses, certificates, results or staff names. Do not make medical or hair/skin outcome claims. Avoid promotional language and repetitive openings. Do not use full stops.",
-
-  // IMPORTANT: These labels must exactly match route.js CHIPS.
+  // Keep these labels exactly aligned with iconic-luxury-salon-route.js.
   chips: [
-    { label: "Haircut & Styling" },
-    { label: "Hair Services" },
-    { label: "Makeup Services" },
-    { label: "Salon Ambience" },
-    { label: "Staff Behaviour" },
-    { label: "Clean & Hygiene" },
-    { label: "Professional Service" },
-    { label: "Value for Money" },
-    { label: "Golghar Location" },
-    { label: "Academy & Training" },
+    { label: "Haircut & Styling", icon: "✂" },
+    { label: "Hair Services", icon: "✧" },
+    { label: "Makeup Services", icon: "◈" },
+    { label: "Salon Ambience", icon: "⌂" },
+    { label: "Staff Behaviour", icon: "♡" },
+    { label: "Clean & Hygiene", icon: "✦" },
+    { label: "Professional Service", icon: "◇" },
+    { label: "Value for Money", icon: "₹" },
+    { label: "Golghar Location", icon: "⌖" },
+    { label: "Academy & Training", icon: "✎" },
   ],
 };
 
+const THEME = {
+  surface: "#FFF8F6",
+  primary: "#49312F",
+  white: "#FFFFFF",
+  muted: "#806B69",
+  accent: "#C99A9D",
+  border: "#EBD9D8",
+};
+
 const MAP_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(
-  `${CLIENT_CONFIG.businessName}, ${CLIENT_CONFIG.fullAddress}`
+  CLIENT_CONFIG.mapSearch
 )}&output=embed`;
 
 const AGENCY_WA_LINK = `https://wa.me/${CLIENT_CONFIG.agencyWhatsapp}?text=${encodeURIComponent(
-  "Hi VR Max AI, I want to get a QR review system for my business."
+  "Hi VR Max AI, I want to know more about the AI Google Review system."
 )}`;
 
 const HAS_SOCIAL = Boolean(
   CLIENT_CONFIG.instagramUrl ||
-  CLIENT_CONFIG.facebookUrl ||
-  CLIENT_CONFIG.youtubeUrl ||
-  CLIENT_CONFIG.websiteUrl ||
-  CLIENT_CONFIG.whatsappChannelUrl
+    CLIENT_CONFIG.facebookUrl ||
+    CLIENT_CONFIG.youtubeUrl
 );
 
-// =====================================================================
-// TYPEWRITER
-// =====================================================================
-
-function useTypewriter(fullText, totalMs = 2300) {
+function useTypewriter(fullText, speed = 10) {
   const [displayText, setDisplayText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
@@ -84,56 +83,26 @@ function useTypewriter(fullText, totalMs = 2300) {
     if (!fullText) {
       setDisplayText("");
       setIsTyping(false);
-      return;
+      return undefined;
     }
 
     setDisplayText("");
     setIsTyping(true);
-
-    const COMMA_PAUSE = 90;
-    const commas = (fullText.match(/,/g) || []).length;
-    const base = Math.min(
-      26,
-      Math.max(10, (totalMs - commas * COMMA_PAUSE) / fullText.length)
-    );
-
-    const times = [];
-    let t = 0;
-
-    for (let i = 0; i < fullText.length; i++) {
-      t += base;
-      times.push(t);
-      if (fullText[i] === ",") t += COMMA_PAUSE;
-    }
-
-    const start = performance.now();
-    let raf;
-
-    const tick = (now) => {
-      const elapsed = now - start;
-      let n = 0;
-
-      while (n < times.length && times[n] <= elapsed) n++;
-
-      setDisplayText(fullText.slice(0, n));
-
-      if (n >= fullText.length) {
+    let index = 0;
+    const timer = window.setInterval(() => {
+      index += 1;
+      setDisplayText(fullText.slice(0, index));
+      if (index >= fullText.length) {
+        window.clearInterval(timer);
         setIsTyping(false);
-      } else {
-        raf = requestAnimationFrame(tick);
       }
-    };
+    }, speed);
 
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [fullText, totalMs]);
+    return () => window.clearInterval(timer);
+  }, [fullText, speed]);
 
   return { displayText, isTyping };
 }
-
-// =====================================================================
-// COPY TO CLIPBOARD
-// =====================================================================
 
 async function copyToClipboard(text) {
   try {
@@ -141,36 +110,102 @@ async function copyToClipboard(text) {
       await navigator.clipboard.writeText(text);
       return true;
     }
-  } catch (e) {
-    // Fallback below
+  } catch (error) {
+    // Use the fallback below when browser clipboard permission is unavailable.
   }
 
   try {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.setAttribute("readonly", "");
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    ta.setSelectionRange(0, text.length);
-    const ok = document.execCommand("copy");
-    ta.remove();
-    return ok;
-  } catch (e) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    textarea.setSelectionRange(0, text.length);
+    const copied = document.execCommand("copy");
+    textarea.remove();
+    return copied;
+  } catch (error) {
     return false;
   }
 }
 
-// =====================================================================
-// MAIN PAGE
-// =====================================================================
+function Icon({ name }) {
+  const common = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
 
-export default function UniversalReviewPage() {
+  if (name === "whatsapp") {
+    return (
+      <svg {...common}>
+        <path d="M20.4 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20l1.2-4.8a8.4 8.4 0 1 1 16.2-3.7Z" />
+        <path d="M8.5 8.2c.3-.5.6-.5.9-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.3.1.5-.1.7l-.6.7c-.2.2-.2.4 0 .7.5.8 1.2 1.5 2.1 2 .3.2.5.2.7-.1l.7-.8c.2-.2.4-.3.7-.2l1.6.8c.3.1.4.3.4.5 0 .3-.2 1.1-.7 1.5-.5.5-1.1.7-1.8.7-.6 0-1.4-.2-2.4-.7-1.1-.5-2.2-1.4-3.1-2.4-.9-1-1.5-2.1-1.7-2.9-.2-.8 0-1.5.4-2Z" />
+      </svg>
+    );
+  }
+
+  if (name === "phone") {
+    return (
+      <svg {...common}>
+        <path d="M21 16.5v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3 5.7 2 2 0 0 1 5 3.5h3a2 2 0 0 1 2 1.7c.1.8.3 1.6.6 2.3a2 2 0 0 1-.5 2.1L8.8 11a16 16 0 0 0 4.2 4.2l1.4-1.3a2 2 0 0 1 2.1-.5c.7.3 1.5.5 2.3.6a2 2 0 0 1 2.2 2.5Z" />
+      </svg>
+    );
+  }
+
+  if (name === "map") {
+    return (
+      <svg {...common}>
+        <path d="M20 10c0 6.5-8 12-8 12S4 16.5 4 10a8 8 0 1 1 16 0Z" />
+        <circle cx="12" cy="10" r="2.5" />
+      </svg>
+    );
+  }
+
+  if (name === "contact") {
+    return (
+      <svg {...common}>
+        <circle cx="9" cy="8" r="4" />
+        <path d="M2.5 21v-1.5A4.5 4.5 0 0 1 7 15h4a4.5 4.5 0 0 1 4.5 4.5V21M19 8v8M15 12h8" />
+      </svg>
+    );
+  }
+
+  if (name === "instagram") {
+    return (
+      <svg {...common}>
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <path d="M17.5 6.5h.01" />
+      </svg>
+    );
+  }
+
+  if (name === "facebook") {
+    return (
+      <svg {...common}>
+        <path d="M14 21v-8h3l.5-3H14V8c0-.9.3-1.5 1.6-1.5H18V3.2c-.4-.1-1.4-.2-2.7-.2-2.8 0-4.8 1.7-4.8 4.9V10H7.5v3h3v8Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...common}>
+      <path d="M3 7.5a2.5 2.5 0 0 1 2.5-2.5h13A2.5 2.5 0 0 1 21 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5Z" />
+      <path d="m8 10 4 3 4-3" />
+    </svg>
+  );
+}
+
+export default function Page() {
   const [mounted, setMounted] = useState(false);
-  const [selectedLabels, setSelectedLabels] = useState(["All"]);
-  const firstRunRef = useRef(true);
-
+  const [selectedChips, setSelectedChips] = useState(["All"]);
   const [language, setLanguage] = useState("ENGLISH");
   const [reviewDraft, setReviewDraft] = useState("");
   const [loading, setLoading] = useState(false);
@@ -180,28 +215,20 @@ export default function UniversalReviewPage() {
   const abortControllerRef = useRef(null);
   const requestIdRef = useRef(0);
   const recentLengthsRef = useRef([]);
-
-  const { displayText, isTyping } = useTypewriter(reviewDraft);
+  const { displayText, isTyping } = useTypewriter(reviewDraft, 10);
 
   useEffect(() => {
     setMounted(true);
-
     return () => {
-      requestIdRef.current++;
+      requestIdRef.current += 1;
       abortControllerRef.current?.abort();
     };
   }, []);
 
-  // ===================================================================
-  // AI REVIEW GENERATION
-  // ===================================================================
-
-  const generateAIReview = useCallback(async (labels, lang) => {
+  const generateAIReview = useCallback(async (chips, lang) => {
     abortControllerRef.current?.abort();
-
     const controller = new AbortController();
     abortControllerRef.current = controller;
-
     const requestId = ++requestIdRef.current;
 
     setLoading(true);
@@ -210,184 +237,103 @@ export default function UniversalReviewPage() {
     setReviewDraft("");
 
     try {
-      const effectiveFocus = labels.join(" + ");
+      const payload = {
+        businessName: CLIENT_CONFIG.businessName,
+        category: CLIENT_CONFIG.category,
+        description: CLIENT_CONFIG.description,
+        city: CLIENT_CONFIG.city,
+        selectedChips: chips.includes("All") ? [] : chips,
+        language: lang,
+        customerExperience: "",
+        customInstruction: "",
+        recentLengths: recentLengthsRef.current,
+        nonce: Math.random().toString(36).slice(2, 12),
+        timestamp: Date.now(),
+        randomSeed: Math.floor(Math.random() * 100000),
+      };
 
-      const res = await fetch("/api/reviews", {
+      const response = await fetch("/api/reviews", {
         method: "POST",
         signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         cache: "no-store",
-        body: JSON.stringify({
-          businessName: CLIENT_CONFIG.businessName,
-          category: CLIENT_CONFIG.tagline,
-          description: CLIENT_CONFIG.description,
-          city: CLIENT_CONFIG.city,
-          selectedService: effectiveFocus,
-          selectedChips: labels,
-          customInstruction: CLIENT_CONFIG.customInstruction,
-          language: lang,
-          nonce: Math.random().toString(36).substring(2, 12),
-          timestamp: Date.now(),
-          randomSeed: Math.floor(Math.random() * 100000),
-          recentLengths: recentLengthsRef.current,
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        throw new Error(
-          data.error || `Draft generation failed (${res.status}).`
-        );
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || `Review draft generation failed (${response.status}).`);
       }
-
       if (!data.review?.trim()) {
-        throw new Error("The API returned an empty draft.");
+        throw new Error("The API returned an empty review draft.");
       }
-
       if (requestId !== requestIdRef.current) return;
 
       if (data.meta) {
-        recentLengthsRef.current = [
-          ...recentLengthsRef.current,
-          data.meta,
-        ].slice(-6);
+        recentLengthsRef.current = [...recentLengthsRef.current, data.meta].slice(-6);
       }
-
       setReviewDraft(data.review.trim());
-    } catch (err) {
-      if (err.name === "AbortError") return;
-
+    } catch (requestError) {
+      if (requestError.name === "AbortError") return;
       if (requestId === requestIdRef.current) {
-        setError(err.message || "Unable to generate a draft.");
+        setError(requestError.message || "Unable to generate a review draft.");
       }
     } finally {
-      if (requestId === requestIdRef.current) {
-        setLoading(false);
-      }
+      if (requestId === requestIdRef.current) setLoading(false);
     }
   }, []);
 
-  // ===================================================================
-  // AUTO GENERATION
-  // ===================================================================
-
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted) return undefined;
+    generateAIReview(selectedChips, language);
+    return () => abortControllerRef.current?.abort();
+  }, [mounted, selectedChips, language, generateAIReview]);
 
-    const delay = firstRunRef.current ? 0 : 350;
-    firstRunRef.current = false;
-
-    const t = setTimeout(
-      () => generateAIReview(selectedLabels, language),
-      delay
-    );
-
-    return () => {
-      clearTimeout(t);
-      abortControllerRef.current?.abort();
-    };
-  }, [mounted, selectedLabels, language, generateAIReview]);
-
-  // ===================================================================
-  // CHIP SELECTION (MAXIMUM 3)
-  // ===================================================================
-
-  function handleChipChange(chipObj) {
-    if (chipObj.label === "All") {
-      if (
-        selectedLabels.length === 1 &&
-        selectedLabels[0] === "All"
-      ) {
-        generateAIReview(["All"], language);
-      } else {
-        setSelectedLabels(["All"]);
-      }
+  function handleChipToggle(label) {
+    if (label === "All") {
+      setSelectedChips(["All"]);
       return;
     }
 
-    let next = selectedLabels.filter((l) => l !== "All");
-
-    if (next.includes(chipObj.label)) {
-      next = next.filter((l) => l !== chipObj.label);
-    } else {
-      next = [...next, chipObj.label];
-
-      if (next.length > 3) {
-        next = next.slice(-3);
-      }
-    }
-
-    setSelectedLabels(next.length ? next : ["All"]);
+    setSelectedChips((current) => {
+      const active = current.filter((item) => item !== "All");
+      const next = active.includes(label)
+        ? active.filter((item) => item !== label)
+        : active.length < 3
+          ? [...active, label]
+          : active;
+      return next.length ? next : ["All"];
+    });
   }
 
-  // ===================================================================
-  // LANGUAGE
-  // ===================================================================
-
-  function handleLanguageChange(lang) {
-    if (lang === language) {
-      generateAIReview(selectedLabels, lang);
-      return;
-    }
-
-    setLanguage(lang);
+  function handleLanguageChange(nextLanguage) {
+    setLanguage(nextLanguage);
   }
-
-  // ===================================================================
-  // COPY AND REDIRECT
-  // ===================================================================
 
   async function handleCopyAndRedirect() {
     if (!reviewDraft || loading || isTyping) return;
 
-    if (CLIENT_CONFIG.googleReviewUrl.includes("PASTE_PLACE_ID_HERE")) {
-      setError("Google Review link has not been configured yet.");
-      return;
-    }
-
-    const ok = await copyToClipboard(reviewDraft);
-
-    if (!ok) {
-      setError(
-        "Could not copy the draft. Please select and copy it manually."
-      );
+    const copiedSuccessfully = await copyToClipboard(reviewDraft);
+    if (!copiedSuccessfully) {
+      setError("Could not copy the draft. Please select and copy it manually.");
       return;
     }
 
     setCopied(true);
-
-    setTimeout(() => {
+    window.setTimeout(() => {
       window.location.href = CLIENT_CONFIG.googleReviewUrl;
     }, 550);
   }
 
-  // ===================================================================
-  // SAVE CONTACT
-  // ===================================================================
-
   function handleSaveContact() {
-    const vcard = `BEGIN:VCARD
-VERSION:3.0
-FN:${CLIENT_CONFIG.businessName}
-ORG:${CLIENT_CONFIG.businessName}
-TEL;TYPE=CELL:${CLIENT_CONFIG.phone}
-ADR;TYPE=WORK:;;${CLIENT_CONFIG.fullAddress};;;;
-NOTE:${CLIENT_CONFIG.subHeading}
-END:VCARD`;
+    if (!CLIENT_CONFIG.phone) return;
 
-    const blob = new Blob([vcard], {
-      type: "text/vcard;charset=utf-8;",
-    });
-
+    const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${CLIENT_CONFIG.businessName}\nORG:${CLIENT_CONFIG.businessName}\nTEL;TYPE=CELL:${CLIENT_CONFIG.phone}\nADR;TYPE=WORK:;;${CLIENT_CONFIG.fullAddress};;;;\nNOTE:${CLIENT_CONFIG.subHeading}\nEND:VCARD`;
+    const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-
     link.href = url;
     link.download = `${CLIENT_CONFIG.businessName.replace(/\s+/g, "_")}.vcf`;
-
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -395,1112 +341,1045 @@ END:VCARD`;
   }
 
   if (!mounted) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          backgroundColor: "#f8f3ed",
-        }}
-      />
-    );
+    return <div className="salon-page-loading" aria-hidden="true" />;
   }
 
+  const allSelected = selectedChips.includes("All");
+
   return (
-    <main className="salon-luxury-viewport">
-      {/* BACKGROUND IMAGE: place image at public/bg.png */}
-      <div className="fixed-bg"></div>
+    <main className="salon-review-viewport">
+      <div className="salon-page-content">
+        {/* Salon identity */}
+        <header className="salon-brand-block">
+          <div className="salon-logo-frame">
+            <div
+              className="salon-logo"
+              style={{ backgroundImage: `url(${CLIENT_CONFIG.logoUrl})` }}
+              role="img"
+              aria-label={`${CLIENT_CONFIG.businessName} logo`}
+            />
+          </div>
 
-      <div className="background-soft-overlay"></div>
+          <div className="salon-brand-kicker">
+            <span className="kicker-line" />
+            <span>YOUR STYLE, YOUR EXPERIENCE</span>
+            <span className="kicker-line" />
+          </div>
+          <h1 className="salon-brand-title">{CLIENT_CONFIG.businessName}</h1>
+          <p className="salon-brand-subtitle">{CLIENT_CONFIG.subHeading}</p>
+          <div className="salon-stars" aria-label="Share your five-star experience">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <span key={index}>★</span>
+            ))}
+          </div>
+        </header>
 
-      <div className="main-content-flow">
-
-        {/* LOGO */}
-        <div className="brand-medallion-badge">
-          <div
-            className="logo-circle-container"
-            style={{
-              backgroundImage: `url(${CLIENT_CONFIG.logoUrl})`,
-            }}
-            role="img"
-            aria-label={`${CLIENT_CONFIG.businessName} logo`}
-          ></div>
-
-          <h1 className="brand-main-title">
-            {CLIENT_CONFIG.businessName}
-          </h1>
-        </div>
-
-        <p className="brand-serif-subtitle">
-          {CLIENT_CONFIG.subHeading}
-        </p>
-
-        {/* DIVIDER */}
-        <div className="royal-salon-divider">
-          <span className="divider-line"></span>
-          <span className="divider-gem">✦</span>
-          <span className="divider-line"></span>
-        </div>
-
-        {/* STARS */}
-        <div className="stars-cluster" aria-hidden="true">
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-          <span>★</span>
-        </div>
-
-        <p className="experience-tracker-title">
-          SHARE YOUR EXPERIENCE
-        </p>
-
-        {/* FILTER CHIPS */}
-        <div className="floating-pills-cloud">
-          <button
-            type="button"
-            onClick={() => handleChipChange({ label: "All" })}
-            className={`embossed-pill ${
-              selectedLabels.includes("All") ? "active" : ""
-            }`}
-          >
-            All
-          </button>
-
-          {CLIENT_CONFIG.chips.map((chip) => {
-            const active = selectedLabels.includes(chip.label);
-
-            return (
-              <button
-                key={chip.label}
-                type="button"
-                onClick={() => handleChipChange(chip)}
-                className={`embossed-pill ${active ? "active" : ""}`}
-              >
-                {chip.label}
-                {active && " ✓"}
-              </button>
-            );
-          })}
-        </div>
-
-        <p className="chip-hint">
-          Tap up to 3 points for your review
-        </p>
-
-        {/* LANGUAGE SELECTOR */}
-        <div className="capsule-lang-dock">
-          {["ENGLISH", "HINGLISH"].map((lang) => {
-            const active = language === lang;
-
-            return (
-              <button
-                key={lang}
-                type="button"
-                onClick={() => handleLanguageChange(lang)}
-                className={`capsule-lang-btn ${
-                  active ? "active" : ""
-                }`}
-              >
-                {lang}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* REVIEW BOX */}
-        <div className="signature-review-box">
-          <div className="box-top-ribbon">
-            <div className="label-badge">
-              <span className="dot-ping"></span>
-              YOUR REVIEW
+        {/* Experience selection */}
+        <section className="experience-section" aria-labelledby="experience-title">
+          <div className="section-heading-row">
+            <div>
+              <span className="section-eyebrow">A LITTLE ABOUT YOUR VISIT</span>
+              <h2 id="experience-title" className="section-title">
+                What did you love?
+              </h2>
             </div>
+            <span className="selection-count">
+              {allSelected ? "ALL" : `${selectedChips.length}/3`}
+            </span>
+          </div>
+          <p className="section-description">
+            Choose up to 3 things that describe your experience.
+          </p>
 
+          <div className="salon-chip-grid">
+            <button
+              type="button"
+              onClick={() => handleChipToggle("All")}
+              className={`salon-chip salon-chip-all ${allSelected ? "is-selected" : ""}`}
+              aria-pressed={allSelected}
+            >
+              <span className="chip-icon">✦</span>
+              <span className="chip-label">Overall Experience</span>
+              <span className="chip-check">{allSelected ? "✓" : "+"}</span>
+            </button>
+
+            {CLIENT_CONFIG.chips.map((chip) => {
+              const active = selectedChips.includes(chip.label);
+              return (
+                <button
+                  key={chip.label}
+                  type="button"
+                  onClick={() => handleChipToggle(chip.label)}
+                  className={`salon-chip ${active ? "is-selected" : ""}`}
+                  aria-pressed={active}
+                >
+                  <span className="chip-icon">{chip.icon}</span>
+                  <span className="chip-label">{chip.label}</span>
+                  <span className="chip-check">{active ? "✓" : "+"}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Language selector */}
+        <section className="language-section" aria-label="Review language">
+          <div className="language-copy">
+            <span className="language-heading">WRITE IN YOUR LANGUAGE</span>
+            <span className="language-subtext">Select the language for your review</span>
+          </div>
+          <div className="language-switch" role="group" aria-label="Choose language">
+            {["ENGLISH", "HINGLISH"].map((lang) => {
+              const active = language === lang;
+              return (
+                <button
+                  key={lang}
+                  type="button"
+                  onClick={() => handleLanguageChange(lang)}
+                  className={`language-option ${active ? "is-active" : ""}`}
+                  aria-pressed={active}
+                >
+                  {lang === "HINGLISH" ? "Hinglish" : "English"}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Generated review */}
+        <section className="review-card" aria-label="Your AI review draft">
+          <div className="review-card-top">
+            <div className="review-card-label">
+              <span className="review-label-spark">✦</span>
+              <span>YOUR REVIEW DRAFT</span>
+            </div>
             <button
               type="button"
               disabled={loading || isTyping}
-              onClick={() =>
-                generateAIReview(selectedLabels, language)
-              }
-              className="top-rewrite-btn"
+              onClick={() => generateAIReview(selectedChips, language)}
+              className="rewrite-button"
             >
-              <span>Rewrite</span>
+              <span className="rewrite-symbol">↻</span> Rewrite
             </button>
           </div>
 
-          <div className="review-display-zone">
+          <div className="review-display-zone" aria-live="polite">
             {loading ? (
-              <div className="loader-shimmer-wrap">
-                <span className="sparkle-icon">✦</span>
-                <span className="shimmer-text">
-                  Crafting your review...
-                </span>
+              <div className="review-loading">
+                <span className="loading-flower">✿</span>
+                <span>Creating your review...</span>
               </div>
             ) : error ? (
-              <p className="review-error">{error}</p>
+              <div className="review-error-block">
+                <p>{error}</p>
+                <button type="button" onClick={() => generateAIReview(selectedChips, language)}>
+                  Try again
+                </button>
+              </div>
             ) : reviewDraft ? (
-              <p className="review-body-text">
+              <p className="review-draft-text">
                 {displayText}
-                {isTyping && (
-                  <span className="typewriter-cursor"></span>
-                )}
+                {isTyping && <span className="typing-cursor" />}
               </p>
             ) : (
               <p className="review-placeholder">
-                Your review draft will appear here.
+                Your personalised review will appear here.
               </p>
             )}
           </div>
 
-          <div className="card-ornament-center">
-            <span>✦</span>
+          <div className="review-card-divider">
+            <span />
+            <i>✧</i>
+            <span />
           </div>
 
           <button
             type="button"
             disabled={loading || isTyping || !reviewDraft}
             onClick={handleCopyAndRedirect}
-            className={`full-luxury-copy-btn ${
-              copied ? "copied" : ""
-            }`}
+            className="copy-google-button"
           >
-            <span>
-              {copied
-                ? "Copied! Opening Google..."
-                : "Copy & Paste on Google"}
-            </span>
+            <span>{copied ? "Copied! Opening Google..." : "Copy & Open Google Reviews"}</span>
+            <span className="button-arrow">↗</span>
           </button>
+          <p className="review-note">Please read your review once before posting it.</p>
+        </section>
 
-          <p className="card-disclaimer-note">
-            Please review the wording before posting.
-          </p>
-        </div>
-
-        {/* QUICK ACTIONS */}
-        <div className="quick-actions-card">
-          <div className="soft-action-grid">
-
-            <div className="action-row-upper">
-
-              {/* WHATSAPP */}
-              <a
-                href={`https://wa.me/${CLIENT_CONFIG.cleanPhone}`}
-                target="_blank"
-                rel="noreferrer"
-                className="soft-circle-action"
-              >
-                <div className="icon-disc whatsapp-disc">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                  </svg>
-                </div>
-                <span className="icon-tag">WhatsApp</span>
-              </a>
-
-              {/* CALL */}
-              <a
-                href={`tel:${CLIENT_CONFIG.phone}`}
-                className="soft-circle-action"
-              >
-                <div className="icon-disc call-disc">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                  </svg>
-                </div>
-                <span className="icon-tag">Call Us</span>
-              </a>
-
-              {/* SAVE CONTACT */}
-              <button
-                type="button"
-                onClick={handleSaveContact}
-                className="soft-circle-action"
-              >
-                <div className="icon-disc contact-disc">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="8.5" cy="7" r="4" />
-                    <line x1="20" y1="8" x2="20" y2="14" />
-                    <line x1="23" y1="11" x2="17" y2="11" />
-                  </svg>
-                </div>
-                <span className="icon-tag">Save Contact</span>
-              </button>
-
-              {/* DIRECTIONS */}
-              <a
-                href={CLIENT_CONFIG.mapsDirectionUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="soft-circle-action"
-              >
-                <div className="icon-disc map-disc">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                </div>
-                <span className="icon-tag">Directions</span>
-              </a>
+        {/* Quick contact and social actions */}
+        {(CLIENT_CONFIG.phone || HAS_SOCIAL || CLIENT_CONFIG.mapsDirectionUrl) && (
+          <section className="quick-actions-card" aria-label="Salon quick links">
+            <div className="quick-actions-heading">
+              <span className="section-eyebrow">STAY CONNECTED</span>
+              <h2>Visit & Connect</h2>
             </div>
-
-            {/* SOCIAL LINKS */}
-            <div
-              className="action-row-lower"
-              style={HAS_SOCIAL ? undefined : { display: "none" }}
-            >
+            <div className="quick-actions-grid">
+              {CLIENT_CONFIG.cleanPhone && (
+                <a
+                  href={`https://wa.me/${CLIENT_CONFIG.cleanPhone}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="quick-action"
+                >
+                  <span className="quick-action-icon"><Icon name="whatsapp" /></span>
+                  <span>WhatsApp</span>
+                </a>
+              )}
+              {CLIENT_CONFIG.phone && (
+                <a href={`tel:${CLIENT_CONFIG.phone}`} className="quick-action">
+                  <span className="quick-action-icon"><Icon name="phone" /></span>
+                  <span>Call Salon</span>
+                </a>
+              )}
+              {CLIENT_CONFIG.phone && (
+                <button type="button" onClick={handleSaveContact} className="quick-action">
+                  <span className="quick-action-icon"><Icon name="contact" /></span>
+                  <span>Save Contact</span>
+                </button>
+              )}
+              {CLIENT_CONFIG.mapsDirectionUrl && (
+                <a
+                  href={CLIENT_CONFIG.mapsDirectionUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="quick-action"
+                >
+                  <span className="quick-action-icon"><Icon name="map" /></span>
+                  <span>Directions</span>
+                </a>
+              )}
               {CLIENT_CONFIG.instagramUrl && (
-                <a
-                  href={CLIENT_CONFIG.instagramUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="soft-circle-action"
-                >
-                  <div className="icon-disc insta-disc">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                    </svg>
-                  </div>
-                  <span className="icon-tag">Instagram</span>
+                <a href={CLIENT_CONFIG.instagramUrl} target="_blank" rel="noreferrer" className="quick-action">
+                  <span className="quick-action-icon"><Icon name="instagram" /></span>
+                  <span>Instagram</span>
                 </a>
               )}
-
-              {CLIENT_CONFIG.websiteUrl && (
-                <a
-                  href={CLIENT_CONFIG.websiteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="soft-circle-action"
-                >
-                  <div className="icon-disc web-disc">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="2" y1="12" x2="22" y2="12" />
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                    </svg>
-                  </div>
-                  <span className="icon-tag">Website</span>
-                </a>
-              )}
-
-              {CLIENT_CONFIG.whatsappChannelUrl && (
-                <a
-                  href={CLIENT_CONFIG.whatsappChannelUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="soft-circle-action"
-                >
-                  <div className="icon-disc wa-channel-disc">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                    </svg>
-                  </div>
-                  <span className="icon-tag">WA Channel</span>
-                </a>
-              )}
-
               {CLIENT_CONFIG.facebookUrl && (
-                <a
-                  href={CLIENT_CONFIG.facebookUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="soft-circle-action"
-                >
-                  <div className="icon-disc fb-disc">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                    </svg>
-                  </div>
-                  <span className="icon-tag">Facebook</span>
+                <a href={CLIENT_CONFIG.facebookUrl} target="_blank" rel="noreferrer" className="quick-action">
+                  <span className="quick-action-icon"><Icon name="facebook" /></span>
+                  <span>Facebook</span>
                 </a>
               )}
-
               {CLIENT_CONFIG.youtubeUrl && (
-                <a
-                  href={CLIENT_CONFIG.youtubeUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="soft-circle-action"
-                >
-                  <div className="icon-disc yt-disc">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
-                      <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" />
-                    </svg>
-                  </div>
-                  <span className="icon-tag">YouTube</span>
+                <a href={CLIENT_CONFIG.youtubeUrl} target="_blank" rel="noreferrer" className="quick-action">
+                  <span className="quick-action-icon"><Icon name="youtube" /></span>
+                  <span>YouTube</span>
                 </a>
               )}
+            </div>
+          </section>
+        )}
+
+        {/* Location card */}
+        <section className="salon-map-card" aria-label="Salon location">
+          <div className="map-card-heading">
+            <div className="map-pin-mark"><Icon name="map" /></div>
+            <div>
+              <span className="section-eyebrow">COME SAY HELLO</span>
+              <h2>Find Our Salon</h2>
             </div>
           </div>
-        </div>
-
-        {/* MAP CARD */}
-        <div className="embedded-map-card">
-          <a
-            href={CLIENT_CONFIG.mapsDirectionUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="map-card-header-link"
-          >
-            <div className="address-highlight-box">
-              <p className="agency-clean-address">
-                <strong>Location:</strong> {CLIENT_CONFIG.fullAddress}
-              </p>
-            </div>
-
-            <div className="map-card-header">
-              <span>Visit Us · {CLIENT_CONFIG.areaLabel}</span>
-            </div>
-          </a>
-
-          <div className="map-iframe-container">
+          <p className="salon-address">{CLIENT_CONFIG.fullAddress}</p>
+          <div className="salon-map-frame">
             <iframe
-              title={`${CLIENT_CONFIG.businessName} Location`}
+              title={`${CLIENT_CONFIG.businessName} map`}
               src={MAP_EMBED_URL}
               width="100%"
-              height="170"
+              height="190"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
-
           <a
             href={CLIENT_CONFIG.mapsDirectionUrl}
             target="_blank"
             rel="noreferrer"
-            className="map-directions-link"
+            className="map-directions-button"
           >
-            Get Directions on Google Maps →
+            Get Directions <span>↗</span>
           </a>
-        </div>
+        </section>
 
-        {/* FOOTER */}
-        <footer className="mini-footer">
-          <span className="mini-footer-pill">
-            Powered by <strong>{CLIENT_CONFIG.agencyName}</strong>
-            <span className="mini-footer-dot">•</span>
-            Get QR:
-            <a
-              href={AGENCY_WA_LINK}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {CLIENT_CONFIG.agencyPhoneDisplay}
+        {/* Footer */}
+        <footer className="salon-footer">
+          <div className="footer-ornament">✧</div>
+          <p>Thank you for choosing {CLIENT_CONFIG.businessName}</p>
+          <div className="footer-credit">
+            <span>Powered by</span>
+            <strong>{CLIENT_CONFIG.agencyName}</strong>
+            <span className="footer-separator">•</span>
+            <a href={AGENCY_WA_LINK} target="_blank" rel="noreferrer">
+              Get QR Review System
             </a>
-          </span>
+          </div>
+          <span className="footer-phone">{CLIENT_CONFIG.agencyPhoneDisplay}</span>
         </footer>
       </div>
 
-      {/* =================================================================
-          SALON LUXURY THEME
-          Ivory + Champagne Gold + Burgundy + Soft Rose
-          Background image path: /bg.png
-         ================================================================= */}
-
       <style jsx global>{`
-        html,
-        body {
-          margin: 0 !important;
-          padding: 0 !important;
-          min-height: 100% !important;
-          background: #f8f3ed !important;
+        :root {
+          --salon-surface: ${THEME.surface};
+          --salon-primary: ${THEME.primary};
+          --salon-white: ${THEME.white};
+          --salon-muted: ${THEME.muted};
+          --salon-accent: ${THEME.accent};
+          --salon-border: ${THEME.border};
         }
 
-        * {
-          box-sizing: border-box;
+        .salon-page-loading {
+          min-height: 100vh;
+          background: transparent;
         }
 
-        .salon-luxury-viewport {
+        .salon-review-viewport {
+          min-height: 100vh;
+          width: 100%;
           position: relative;
           isolation: isolate;
-          min-height: 100vh;
-          background: #f8f3ed;
-          padding: 10px 16px 24px;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-            Roboto, sans-serif;
-          color: #49352f;
+          overflow: hidden;
+          background: transparent;
+          color: var(--salon-primary);
+          padding: 18px 15px 30px;
+          box-sizing: border-box;
+          display: flex;
+          justify-content: center;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .salon-page-content {
+          width: 100%;
+          max-width: 430px;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          overflow: hidden;
-        }
-
-        /* BACKGROUND IMAGE */
-        .fixed-bg {
-          position: fixed;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          background-image: url("/bg.png");
-          background-size: cover;
-          background-position: center top;
-          background-repeat: no-repeat;
-          z-index: -2;
-          pointer-events: none;
-        }
-
-        .background-soft-overlay {
-          position: fixed;
-          inset: 0;
-          z-index: -1;
-          pointer-events: none;
-          background: linear-gradient(
-            180deg,
-            rgba(255, 250, 243, 0.14) 0%,
-            rgba(255, 250, 243, 0.2) 45%,
-            rgba(255, 250, 243, 0.35) 100%
-          );
-        }
-
-        .main-content-flow {
+          align-items: stretch;
           position: relative;
           z-index: 1;
-          width: 100%;
-          max-width: 410px;
+        }
+
+        .salon-brand-block {
           display: flex;
           flex-direction: column;
           align-items: center;
           text-align: center;
+          padding: 10px 12px 18px;
         }
 
-        /* BRAND */
-        .brand-medallion-badge {
-          margin-top: 2px;
-          margin-bottom: 2px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        .salon-logo-frame {
+          width: 116px;
+          height: 116px;
+          border-radius: 31px;
+          padding: 5px;
+          background: var(--salon-surface);
+          border: 1px solid var(--salon-border);
+          box-shadow: 0 12px 28px rgba(73, 49, 47, 0.13);
+          margin-bottom: 17px;
         }
 
-        .logo-circle-container {
-          width: 98px;
-          height: 98px;
-          border-radius: 50%;
-          background-color: #fffaf3;
-          background-size: cover;
+        .salon-logo {
+          width: 100%;
+          height: 100%;
+          border-radius: 26px;
+          background-color: var(--salon-surface);
           background-position: center;
           background-repeat: no-repeat;
-          box-shadow:
-            0 10px 26px rgba(75, 36, 43, 0.16),
-            0 3px 9px rgba(75, 36, 43, 0.08);
-          margin-bottom: 8px;
-          animation: floatLogo 3.5s ease-in-out infinite;
-          border: 3px solid #c9a66b;
-          transition: transform 0.2s ease;
+          background-size: contain;
         }
 
-        .logo-circle-container:active {
-          transform: scale(0.96);
-        }
-
-        @keyframes floatLogo {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-6px);
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .logo-circle-container {
-            animation: none;
-          }
-        }
-
-        .brand-main-title {
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 23px;
-          line-height: 1.2;
-          font-weight: 800;
-          color: #692b3b;
-          margin: 0 0 4px;
-          letter-spacing: 0.2px;
-          text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
-        }
-
-        .brand-serif-subtitle {
-          font-family: Georgia, "Times New Roman", serif;
-          font-style: italic;
-          font-size: 12.5px;
-          color: #a17b49;
-          margin: 0 0 4px;
-          letter-spacing: 0.3px;
-          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-        }
-
-        /* DIVIDER */
-        .royal-salon-divider {
+        .salon-brand-kicker {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 85%;
-          margin: 4px auto 8px;
-          gap: 10px;
-        }
-
-        .divider-line {
-          flex: 1;
-          height: 1px;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            #c5a36c,
-            transparent
-          );
-        }
-
-        .divider-gem {
-          color: #b58a50;
-          font-size: 11px;
-        }
-
-        .stars-cluster {
-          display: flex;
-          gap: 4px;
-          color: #bd965b;
-          font-size: 15px;
-          margin-bottom: 3px;
-          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
-        }
-
-        .experience-tracker-title {
-          font-size: 9px;
+          gap: 9px;
+          color: var(--salon-muted);
+          font-size: 8px;
           font-weight: 800;
           letter-spacing: 2px;
-          color: #70504a;
-          text-transform: uppercase;
-          margin: 0 0 8px;
-          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+          margin-bottom: 9px;
         }
 
-        /* CHIPS */
-        .floating-pills-cloud {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 6px;
-          margin: 0 auto 7px;
-          width: 100%;
+        .kicker-line {
+          width: 22px;
+          height: 1px;
+          background: var(--salon-accent);
         }
 
-        .embossed-pill {
-          border-radius: 999px;
-          padding: 6px 12px;
-          font-size: 11px;
-          font-weight: 600;
-          background: rgba(255, 251, 246, 0.94);
-          color: #70534d;
-          border: 1px solid #e5d4bd;
-          cursor: pointer;
-          box-shadow: 0 2px 7px rgba(73, 42, 38, 0.07);
-          transition:
-            background 0.18s ease,
-            color 0.18s ease,
-            border-color 0.18s ease,
-            box-shadow 0.18s ease,
-            transform 0.16s ease;
+        .salon-brand-title {
+          max-width: 390px;
+          margin: 0;
+          color: var(--salon-primary);
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(25px, 7vw, 31px);
+          line-height: 1.13;
+          font-weight: 700;
+          letter-spacing: -0.65px;
         }
 
-        .embossed-pill:active {
-          transform: scale(0.97);
-        }
-
-        .embossed-pill.active {
-          background: #702b3b;
-          color: #ffffff;
-          border-color: #702b3b;
-          box-shadow: 0 4px 12px rgba(112, 43, 59, 0.2);
-        }
-
-        .chip-hint {
-          text-align: center;
-          font-size: 10.5px;
-          color: #927a6b;
-          margin: 0 0 10px;
+        .salon-brand-subtitle {
+          margin: 8px 0 10px;
+          color: var(--salon-muted);
+          font-size: 12px;
+          line-height: 1.5;
           letter-spacing: 0.2px;
-          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
         }
 
-        /* LANGUAGE */
-        .capsule-lang-dock {
+        .salon-stars {
+          display: flex;
+          gap: 5px;
+          color: var(--salon-accent);
+          font-size: 17px;
+          line-height: 1;
+        }
+
+        .experience-section {
+          width: 100%;
+          padding: 20px 16px 17px;
+          margin: 0 0 13px;
+          box-sizing: border-box;
+          background: rgba(255, 248, 246, 0.94);
+          border: 1px solid var(--salon-border);
+          border-radius: 25px;
+          box-shadow: 0 10px 28px rgba(73, 49, 47, 0.08);
+        }
+
+        .section-heading-row {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 12px;
+        }
+
+        .section-eyebrow {
+          display: block;
+          color: var(--salon-accent);
+          font-size: 8px;
+          font-weight: 850;
+          letter-spacing: 1.8px;
+          line-height: 1.4;
+        }
+
+        .section-title {
+          margin: 4px 0 0;
+          color: var(--salon-primary);
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 22px;
+          line-height: 1.2;
+          font-weight: 700;
+        }
+
+        .selection-count {
+          min-width: 36px;
+          height: 26px;
+          padding: 0 8px;
+          border-radius: 999px;
           display: inline-flex;
-          background: rgba(255, 251, 246, 0.95);
-          border-radius: 999px;
-          padding: 3px;
-          gap: 2px;
-          margin: 0 auto 13px;
-          box-shadow: 0 3px 10px rgba(73, 42, 38, 0.08);
-          border: 1px solid #e5d4bd;
+          align-items: center;
+          justify-content: center;
+          background: #F5E8E7;
+          color: var(--salon-primary);
+          font-size: 9px;
+          font-weight: 850;
+          letter-spacing: 0.6px;
         }
 
-        .capsule-lang-btn {
-          padding: 6px 18px;
-          border-radius: 999px;
-          border: none;
-          background: transparent;
+        .section-description {
+          margin: 7px 0 14px;
+          color: var(--salon-muted);
+          font-size: 11px;
+          line-height: 1.5;
+        }
+
+        .salon-chip-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .salon-chip {
+          min-height: 51px;
+          min-width: 0;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 9px 9px 9px 11px;
+          border: 1px solid var(--salon-border);
+          border-radius: 13px;
+          background: var(--salon-surface);
+          color: var(--salon-muted);
+          text-align: left;
+          cursor: pointer;
+          transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .salon-chip:active {
+          transform: scale(0.975);
+        }
+
+        .salon-chip-all {
+          grid-column: 1 / -1;
+          min-height: 45px;
+        }
+
+        .chip-icon {
+          flex: 0 0 25px;
+          width: 25px;
+          height: 25px;
+          display: inline-grid;
+          place-items: center;
+          border-radius: 9px;
+          background: #F5E8E7;
+          color: var(--salon-accent);
+          font-size: 15px;
+          font-weight: 700;
+        }
+
+        .chip-label {
+          min-width: 0;
+          flex: 1;
           font-size: 10px;
+          line-height: 1.25;
           font-weight: 750;
-          color: #8a7568;
+        }
+
+        .chip-check {
+          flex: 0 0 19px;
+          width: 19px;
+          height: 19px;
+          display: inline-grid;
+          place-items: center;
+          border: 1px solid var(--salon-border);
+          border-radius: 50%;
+          color: var(--salon-accent);
+          font-size: 11px;
+          font-weight: 800;
+        }
+
+        .salon-chip.is-selected {
+          background: var(--salon-primary);
+          border-color: var(--salon-primary);
+          color: var(--salon-white);
+          box-shadow: 0 5px 13px rgba(73, 49, 47, 0.16);
+        }
+
+        .salon-chip.is-selected .chip-icon {
+          background: rgba(255, 255, 255, 0.13);
+          color: #EAC8C8;
+        }
+
+        .salon-chip.is-selected .chip-check {
+          border-color: rgba(255, 255, 255, 0.58);
+          background: rgba(255, 255, 255, 0.14);
+          color: var(--salon-white);
+        }
+
+        .language-section {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          width: 100%;
+          padding: 14px 15px;
+          margin-bottom: 13px;
+          box-sizing: border-box;
+          border: 1px solid var(--salon-border);
+          border-radius: 18px;
+          background: rgba(255, 248, 246, 0.94);
+          box-shadow: 0 7px 19px rgba(73, 49, 47, 0.06);
+        }
+
+        .language-copy {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .language-heading {
+          color: var(--salon-primary);
+          font-size: 9px;
+          font-weight: 850;
+          letter-spacing: 1px;
+        }
+
+        .language-subtext {
+          color: var(--salon-muted);
+          font-size: 9px;
+        }
+
+        .language-switch {
+          flex: 0 0 auto;
+          display: inline-flex;
+          gap: 3px;
+          padding: 3px;
+          border: 1px solid var(--salon-border);
+          border-radius: 999px;
+          background: #F8EFED;
+        }
+
+        .language-option {
+          min-height: 31px;
+          padding: 0 12px;
+          border: 0;
+          border-radius: 999px;
+          background: transparent;
+          color: var(--salon-muted);
+          font-size: 9px;
+          font-weight: 800;
           cursor: pointer;
           transition: all 0.18s ease;
         }
 
-        .capsule-lang-btn.active {
-          background: #702b3b;
-          color: #ffffff;
-          box-shadow: 0 3px 8px rgba(112, 43, 59, 0.18);
+        .language-option.is-active {
+          background: var(--salon-primary);
+          color: var(--salon-white);
+          box-shadow: 0 3px 8px rgba(73, 49, 47, 0.18);
         }
 
-        /* REVIEW CARD */
-        .signature-review-box {
+        .review-card {
           width: 100%;
-          background: rgba(255, 252, 247, 0.97);
-          border-radius: 24px;
-          padding: 18px;
+          padding: 18px 17px 15px;
+          margin-bottom: 14px;
           box-sizing: border-box;
-          box-shadow:
-            0 10px 28px rgba(73, 42, 38, 0.1),
-            0 2px 7px rgba(73, 42, 38, 0.04);
-          margin-bottom: 16px;
+          background: var(--salon-surface);
+          border: 1px solid var(--salon-border);
+          border-top: 4px solid var(--salon-accent);
+          border-radius: 23px;
+          box-shadow: 0 13px 30px rgba(73, 49, 47, 0.11);
           text-align: left;
-          border: 1px solid rgba(221, 199, 169, 0.8);
-          border-top: 4px solid #a77b49;
-          color: #49352f;
         }
 
-        .box-top-ribbon {
+        .review-card-top {
           display: flex;
+          align-items: center;
           justify-content: space-between;
-          align-items: center;
-          margin-bottom: 10px;
+          gap: 10px;
+          margin-bottom: 8px;
         }
 
-        .label-badge {
+        .review-card-label {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          font-size: 8.5px;
-          font-weight: 800;
-          letter-spacing: 1.8px;
-          color: #9b897a;
-          text-transform: uppercase;
+          gap: 7px;
+          color: var(--salon-muted);
+          font-size: 8px;
+          font-weight: 900;
+          letter-spacing: 1.45px;
         }
 
-        .dot-ping {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #a77b49;
-          box-shadow: 0 0 0 3px rgba(167, 123, 73, 0.12);
+        .review-label-spark {
+          color: var(--salon-accent);
+          font-size: 14px;
         }
 
-        .top-rewrite-btn {
+        .rewrite-button {
+          min-height: 31px;
+          padding: 0 11px;
           display: inline-flex;
           align-items: center;
-          padding: 5px 12px;
+          gap: 5px;
+          border: 1px solid var(--salon-border);
           border-radius: 999px;
-          background: #f8f0e7;
-          border: 1px solid #e6d5bf;
-          color: #702b3b;
-          font-size: 10.5px;
-          font-weight: 700;
-          cursor: pointer;
-          transition: transform 0.15s ease;
-        }
-
-        .top-rewrite-btn:active {
-          transform: scale(0.95);
-        }
-
-        .review-display-zone {
-          min-height: 132px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 4px 2px 8px;
-        }
-
-        .loader-shimmer-wrap {
-          color: #a77b49;
-          font-size: 12px;
-          font-style: italic;
-        }
-
-        .sparkle-icon {
-          margin-right: 4px;
-        }
-
-        .review-body-text {
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 14.5px;
-          line-height: 1.65;
-          color: #49352f;
-          margin: 0;
-          width: 100%;
-          white-space: pre-wrap;
-        }
-
-        .review-placeholder {
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 13px;
-          font-style: italic;
-          color: #aa9a8c;
-          margin: 0;
-        }
-
-        .review-error {
-          font-size: 12px;
-          line-height: 1.5;
-          color: #a23d4d;
-          margin: 0;
-        }
-
-        .typewriter-cursor {
-          display: inline-block;
-          width: 2px;
-          height: 13px;
-          background: #8b4352;
-          margin-left: 3px;
-          vertical-align: middle;
-          animation: blink 0.7s infinite;
-        }
-
-        @keyframes blink {
-          0%,
-          100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0;
-          }
-        }
-
-        .card-ornament-center {
-          text-align: center;
-          color: #c5a36c;
+          background: #F7EBE9;
+          color: var(--salon-primary);
           font-size: 10px;
-          margin: 6px 0 10px;
-        }
-
-        .full-luxury-copy-btn {
-          width: 100%;
-          height: 50px;
-          border-radius: 999px;
-          background: linear-gradient(100deg, #702b3b 0%, #8d3d4b 100%);
-          border: 1px solid #702b3b;
-          color: #ffffff;
-          font-size: 12px;
           font-weight: 800;
           cursor: pointer;
-          box-shadow: 0 6px 16px rgba(112, 43, 59, 0.2);
-          transition:
-            transform 0.15s ease,
-            background 0.18s ease,
-            box-shadow 0.18s ease;
         }
 
-        .full-luxury-copy-btn.copied {
-          background: #5e6d4c;
-          border-color: #5e6d4c;
-          box-shadow: 0 5px 14px rgba(94, 109, 76, 0.2);
-        }
-
-        .full-luxury-copy-btn:disabled {
-          opacity: 0.58;
+        .rewrite-button:disabled {
+          opacity: 0.55;
           cursor: not-allowed;
         }
 
-        .full-luxury-copy-btn:active:not(:disabled) {
-          transform: scale(0.98);
+        .rewrite-symbol {
+          color: var(--salon-accent);
+          font-size: 15px;
         }
 
-        .card-disclaimer-note {
-          font-size: 9.5px;
-          color: #a3978a;
-          text-align: center;
-          margin: 8px 0 0;
+        .review-display-zone {
+          min-height: 102px;
+          display: flex;
+          align-items: center;
+          padding: 9px 2px 12px;
+          box-sizing: border-box;
+        }
+
+        .review-loading {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          color: var(--salon-muted);
+          font-size: 11px;
           font-style: italic;
         }
 
-        /* QUICK ACTIONS */
-        .quick-actions-card {
+        .loading-flower {
+          color: var(--salon-accent);
+          font-size: 20px;
+          animation: salonSpin 1.8s linear infinite;
+        }
+
+        @keyframes salonSpin {
+          to { transform: rotate(360deg); }
+        }
+
+        .review-draft-text {
           width: 100%;
-          background: rgba(255, 252, 247, 0.96);
-          border-radius: 22px;
-          padding: 18px 12px;
-          box-sizing: border-box;
-          border: 1px solid #e8d9c7;
-          box-shadow: 0 8px 22px rgba(73, 42, 38, 0.08);
-          margin-bottom: 16px;
-        }
-
-        .soft-action-grid {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 16px;
-          width: 100%;
-        }
-
-        .action-row-upper,
-        .action-row-lower {
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
-          flex-wrap: wrap;
-          gap: 14px;
-          width: 100%;
-        }
-
-        .soft-circle-action {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 5px;
-          text-decoration: none !important;
-          color: #70534d;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          padding: 0;
-          transition: transform 0.15s ease;
-        }
-
-        .soft-circle-action:active {
-          transform: scale(0.92);
-        }
-
-        .icon-disc {
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          background: #f8f0e7;
-          display: grid;
-          place-items: center;
-          box-shadow: 0 3px 9px rgba(73, 42, 38, 0.08);
-          border: 1px solid #e6d5bf;
-          transition: all 0.2s ease;
-        }
-
-        .icon-disc svg {
-          width: 20px;
-          height: 20px;
-          stroke: #80515a;
-          transition: stroke 0.2s ease;
-        }
-
-        .whatsapp-disc:hover {
-          background: #25d366;
-          border-color: #25d366;
-        }
-
-        .whatsapp-disc:hover svg {
-          stroke: #ffffff;
-        }
-
-        .call-disc:hover {
-          background: #007aff;
-          border-color: #007aff;
-        }
-
-        .call-disc:hover svg {
-          stroke: #ffffff;
-        }
-
-        .contact-disc:hover {
-          background: #80515a;
-          border-color: #80515a;
-        }
-
-        .contact-disc:hover svg {
-          stroke: #ffffff;
-        }
-
-        .map-disc:hover {
-          background: #ea4335;
-          border-color: #ea4335;
-        }
-
-        .map-disc:hover svg {
-          stroke: #ffffff;
-        }
-
-        .insta-disc:hover {
-          background: radial-gradient(
-            circle at 30% 107%,
-            #fdf497 0%,
-            #fdf497 5%,
-            #fd5949 45%,
-            #d6249f 60%,
-            #285aeb 90%
-          );
-          border-color: transparent;
-        }
-
-        .insta-disc:hover svg {
-          stroke: #ffffff;
-        }
-
-        .wa-channel-disc:hover {
-          background: #25d366;
-          border-color: #25d366;
-        }
-
-        .wa-channel-disc:hover svg {
-          stroke: #ffffff;
-        }
-
-        .fb-disc:hover {
-          background: #1877f2;
-          border-color: #1877f2;
-        }
-
-        .fb-disc:hover svg {
-          stroke: #ffffff;
-        }
-
-        .yt-disc:hover {
-          background: #ff0000;
-          border-color: #ff0000;
-        }
-
-        .yt-disc:hover svg {
-          stroke: #ffffff;
-        }
-
-        .icon-tag {
-          font-size: 9.5px;
-          font-weight: 700;
-          color: #70534d;
-        }
-
-        /* MAP CARD */
-        .embedded-map-card {
-          width: 100%;
-          background: rgba(255, 252, 247, 0.97);
-          border-radius: 22px;
-          padding: 14px 16px;
-          box-sizing: border-box;
-          border: 1px solid #e8d9c7;
-          box-shadow: 0 7px 20px rgba(73, 42, 38, 0.07);
-          margin-bottom: 12px;
-          text-align: left;
-        }
-
-        .map-card-header-link {
-          text-decoration: none;
-        }
-
-        .map-card-header {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          font-size: 11.5px;
-          font-weight: 800;
-          color: #80515a;
-          margin-bottom: 8px;
-        }
-
-        .map-iframe-container {
-          width: 100%;
-          border-radius: 14px;
-          overflow: hidden;
-          border: 1px solid #e6d5bf;
-          margin-bottom: 8px;
-        }
-
-        .map-directions-link {
-          font-size: 11px;
-          font-weight: 750;
-          color: #a17b49;
-          text-decoration: none;
-          display: block;
-          text-align: center;
-          margin-bottom: 8px;
-        }
-
-        .address-highlight-box {
-          background: #f8f0e7;
-          border-radius: 12px;
-          padding: 10px 12px;
-          border: 1px solid #e6d5bf;
-          margin-bottom: 8px;
-        }
-
-        .agency-clean-address {
-          font-size: 10.5px;
-          color: #655047;
           margin: 0;
+          color: var(--salon-primary);
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 14px;
+          line-height: 1.68;
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+        }
+
+        .review-placeholder {
+          width: 100%;
+          margin: 0;
+          color: var(--salon-muted);
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 13px;
+          font-style: italic;
+          text-align: center;
+        }
+
+        .review-error-block {
+          width: 100%;
+          color: #A13F48;
+          font-size: 11px;
           line-height: 1.5;
           text-align: center;
         }
 
-        /* FOOTER */
-        .mini-footer {
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          margin-top: 2px;
+        .review-error-block p {
+          margin: 0 0 7px;
         }
 
-        .mini-footer-pill {
-          display: inline-flex;
+        .review-error-block button {
+          padding: 6px 13px;
+          border: 1px solid var(--salon-border);
+          border-radius: 999px;
+          background: #F7EBE9;
+          color: var(--salon-primary);
+          font-size: 10px;
+          font-weight: 800;
+        }
+
+        .typing-cursor {
+          display: inline-block;
+          width: 2px;
+          height: 14px;
+          margin-left: 3px;
+          background: var(--salon-accent);
+          vertical-align: middle;
+          animation: salonBlink 0.7s infinite;
+        }
+
+        @keyframes salonBlink {
+          50% { opacity: 0; }
+        }
+
+        .review-card-divider {
+          display: flex;
           align-items: center;
           justify-content: center;
+          gap: 9px;
+          margin: 1px 0 12px;
+          color: var(--salon-accent);
+          font-size: 12px;
+        }
+
+        .review-card-divider span {
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, var(--salon-border), transparent);
+        }
+
+        .review-card-divider i {
+          font-style: normal;
+        }
+
+        .copy-google-button {
+          width: 100%;
+          min-height: 49px;
+          padding: 0 17px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          border: 0;
+          border-radius: 13px;
+          background: var(--salon-primary);
+          color: var(--salon-white);
+          font-size: 11px;
+          font-weight: 850;
+          letter-spacing: 0.15px;
+          box-shadow: 0 7px 17px rgba(73, 49, 47, 0.23);
+          cursor: pointer;
+          transition: transform 0.16s ease, opacity 0.16s ease;
+        }
+
+        .copy-google-button:active:not(:disabled) {
+          transform: scale(0.985);
+        }
+
+        .copy-google-button:disabled {
+          opacity: 0.53;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+
+        .button-arrow {
+          color: #E8C5C5;
+          font-size: 17px;
+          line-height: 1;
+        }
+
+        .review-note {
+          margin: 9px 0 0;
+          color: var(--salon-muted);
+          font-size: 9px;
+          text-align: center;
+        }
+
+        .quick-actions-card,
+        .salon-map-card {
+          width: 100%;
+          padding: 17px 16px;
+          margin-bottom: 13px;
+          box-sizing: border-box;
+          border: 1px solid var(--salon-border);
+          border-radius: 22px;
+          background: rgba(255, 248, 246, 0.95);
+          box-shadow: 0 9px 24px rgba(73, 49, 47, 0.08);
+        }
+
+        .quick-actions-heading {
+          text-align: center;
+          margin-bottom: 13px;
+        }
+
+        .quick-actions-heading h2,
+        .map-card-heading h2 {
+          margin: 4px 0 0;
+          color: var(--salon-primary);
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 20px;
+          line-height: 1.2;
+        }
+
+        .quick-actions-grid {
+          display: flex;
           flex-wrap: wrap;
-          gap: 4px;
-          padding: 6px 13px;
-          border: 1px solid #e6d5bf;
-          border-radius: 999px;
-          background: rgba(255, 252, 247, 0.96);
-          font-size: 8.5px;
-          letter-spacing: 0.3px;
-          color: #9b897a;
-          line-height: 1.4;
-          box-shadow: 0 3px 9px rgba(73, 42, 38, 0.05);
+          justify-content: center;
+          gap: 17px 22px;
         }
 
-        .mini-footer-pill strong {
-          color: #702b3b;
-          font-weight: 800;
+        .quick-action {
+          min-width: 62px;
+          padding: 0;
+          display: inline-flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          border: 0;
+          background: transparent;
+          color: var(--salon-muted);
+          font-size: 9px;
+          font-weight: 750;
+          text-decoration: none;
+          cursor: pointer;
         }
 
-        .mini-footer-dot {
-          color: #bd965b;
+        .quick-action-icon {
+          width: 46px;
+          height: 46px;
+          display: inline-grid;
+          place-items: center;
+          border: 1px solid var(--salon-border);
+          border-radius: 15px;
+          background: #F7EBE9;
+          color: var(--salon-primary);
+          transition: all 0.18s ease;
         }
 
-        .mini-footer-pill a {
-          color: #80515a;
-          font-weight: 800;
+        .quick-action-icon svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .quick-action:active .quick-action-icon {
+          transform: scale(0.94);
+          background: var(--salon-primary);
+          color: var(--salon-white);
+        }
+
+        .map-card-heading {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+          margin-bottom: 9px;
+        }
+
+        .map-pin-mark {
+          width: 42px;
+          height: 42px;
+          flex: 0 0 42px;
+          display: grid;
+          place-items: center;
+          border-radius: 14px;
+          background: #F5E7E6;
+          color: var(--salon-primary);
+        }
+
+        .map-pin-mark svg {
+          width: 19px;
+          height: 19px;
+        }
+
+        .salon-address {
+          margin: 0 0 12px;
+          color: var(--salon-muted);
+          font-size: 10.5px;
+          line-height: 1.55;
+        }
+
+        .salon-map-frame {
+          width: 100%;
+          overflow: hidden;
+          border: 1px solid var(--salon-border);
+          border-radius: 15px;
+          background: #F7EBE9;
+        }
+
+        .salon-map-frame iframe {
+          display: block;
+        }
+
+        .map-directions-button {
+          min-height: 40px;
+          margin-top: 11px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          border: 1px solid var(--salon-border);
+          border-radius: 12px;
+          background: #F7EBE9;
+          color: var(--salon-primary);
+          font-size: 10px;
+          font-weight: 850;
           text-decoration: none;
         }
 
-        /* SMALL SCREEN */
+        .map-directions-button span {
+          color: var(--salon-accent);
+          font-size: 15px;
+        }
+
+        .salon-footer {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 6px 10px 2px;
+          color: var(--salon-muted);
+        }
+
+        .footer-ornament {
+          margin-bottom: 4px;
+          color: var(--salon-accent);
+          font-size: 20px;
+        }
+
+        .salon-footer > p {
+          margin: 0 0 8px;
+          color: var(--salon-primary);
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 12px;
+          font-style: italic;
+        }
+
+        .footer-credit {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          font-size: 8px;
+          letter-spacing: 0.15px;
+        }
+
+        .footer-credit strong,
+        .footer-credit a {
+          color: var(--salon-primary);
+          font-weight: 850;
+          text-decoration: none;
+        }
+
+        .footer-separator {
+          color: var(--salon-accent);
+        }
+
+        .footer-phone {
+          margin-top: 4px;
+          color: var(--salon-muted);
+          font-size: 8px;
+          letter-spacing: 0.4px;
+        }
+
         @media (max-width: 360px) {
-          .salon-luxury-viewport {
-            padding-left: 11px;
-            padding-right: 11px;
+          .salon-review-viewport {
+            padding-right: 10px;
+            padding-left: 10px;
           }
 
-          .brand-main-title {
-            font-size: 21px;
+          .experience-section,
+          .quick-actions-card,
+          .salon-map-card {
+            padding-right: 12px;
+            padding-left: 12px;
           }
 
-          .embossed-pill {
-            padding: 5px 10px;
-            font-size: 10.5px;
+          .salon-chip {
+            gap: 6px;
+            padding-right: 7px;
+            padding-left: 8px;
           }
 
-          .action-row-upper,
-          .action-row-lower {
-            gap: 11px;
+          .chip-label {
+            font-size: 9px;
+          }
+
+          .language-section {
+            align-items: flex-start;
+            flex-direction: column;
+          }
+
+          .language-switch {
+            width: 100%;
+          }
+
+          .language-option {
+            flex: 1;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .salon-chip,
+          .language-option,
+          .copy-google-button,
+          .quick-action-icon {
+            transition: none;
+          }
+
+          .loading-flower,
+          .typing-cursor {
+            animation: none;
           }
         }
       `}</style>
