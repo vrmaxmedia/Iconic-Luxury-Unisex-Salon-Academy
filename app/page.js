@@ -951,11 +951,11 @@ END:VCARD`;
         }
 
         .logo-circle-container {
-          width: 136px;
-          height: 136px;
-          border-radius: 50%;
-          background-color: var(--c-surface);
-          background-size: 94%;
+          width: 112px;
+          height: 112px;
+          border-radius: 30px;
+          background-color: #000000;
+          background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
           box-shadow:
@@ -982,7 +982,7 @@ END:VCARD`;
 
         .brand-main-title {
           font-family: Georgia, serif;
-          font-size: 18.5px;
+          font-size: 16.5px;
           line-height: 1.25;
           font-weight: 800;
           color: var(--c-on-bg-title);
@@ -1184,7 +1184,7 @@ END:VCARD`;
         }
 
         .review-display-zone {
-          min-height: 132px;
+          min-height: 112px;
           display: flex;
           align-items: center;
           justify-content: center;
