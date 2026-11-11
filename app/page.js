@@ -21,8 +21,8 @@ const CLIENT_CONFIG = {
     "Iconic Luxury Unisex Salon & Academy, Golghar, near Mangalam Tower, Gorakhpur, Uttar Pradesh",
 
   // Neeche ke khali hain, details milte hi daal dena to icon apne aap dikhne lagega
-  phone: "",
-  cleanPhone: "",
+  phone: "+919580997664",
+  cleanPhone: "919580997664",
   instagramUrl: "",
   facebookUrl: "",
   websiteUrl: "",
@@ -1301,6 +1301,7 @@ END:VCARD`;
 
         .action-row-upper {
           display: flex;
+          flex-wrap: nowrap;
           justify-content: center;
           gap: 14px;
           width: 100%;
