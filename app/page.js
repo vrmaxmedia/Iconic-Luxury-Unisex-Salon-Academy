@@ -951,11 +951,11 @@ END:VCARD`;
         }
 
         .logo-circle-container {
-          width: 98px;
-          height: 98px;
+          width: 136px;
+          height: 136px;
           border-radius: 50%;
           background-color: var(--c-surface);
-          background-size: contain;
+          background-size: 94%;
           background-position: center;
           background-repeat: no-repeat;
           box-shadow:
@@ -982,7 +982,8 @@ END:VCARD`;
 
         .brand-main-title {
           font-family: Georgia, serif;
-          font-size: 23px;
+          font-size: 18.5px;
+          line-height: 1.25;
           font-weight: 800;
           color: var(--c-on-bg-title);
           margin: 0 0 4px;
