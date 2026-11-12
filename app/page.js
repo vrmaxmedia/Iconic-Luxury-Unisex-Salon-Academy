@@ -19,13 +19,15 @@ const CLIENT_CONFIG = {
   mapSearch:
     "Iconic Luxury Unisex Salon & Academy, Golghar, near Mangalam Tower, Gorakhpur, Uttar Pradesh",
 
-  // Neeche ke khali hain, details milte hi daal dena to icon apne aap dikhne lagega
   phone: "+919580997664",
   cleanPhone: "919580997664",
+
+  // Instagram, Facebook aur Website buttons hamesha page par dikhte hain.
+  // Bas inke andar apna link paste kar do, button usi link par khulne lagega.
   instagramUrl:
     "https://www.instagram.com/iconicluxuryunisexsalon?dlrf=MWVxYW4xZWsxYWY4eQ==",
-  facebookUrl: "",
-  websiteUrl: "",
+  facebookUrl: "", // <-- yahan Facebook page ka link paste karo
+  websiteUrl: "", // <-- yahan Website ka link paste karo
   youtubeUrl: "",
   whatsappChannelUrl: "",
 
@@ -1352,17 +1354,13 @@ END:VCARD`;
         .map-disc:hover { background: #ea4335; border-color: #ea4335; }
         .map-disc:hover svg { stroke: #ffffff; }
 
-        .insta-disc:hover {
-          background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-          border-color: transparent;
-        }
-
+        .insta-disc:hover { background: var(--c-primary); border-color: var(--c-primary); }
         .insta-disc:hover svg { stroke: #ffffff; }
 
         .wa-channel-disc:hover { background: #25d366; border-color: #25d366; }
         .wa-channel-disc:hover svg { stroke: #ffffff; }
 
-        .fb-disc:hover { background: #1877f2; border-color: #1877f2; }
+        .fb-disc:hover { background: var(--c-primary); border-color: var(--c-primary); }
         .fb-disc:hover svg { stroke: #ffffff; }
 
         .yt-disc:hover { background: #ff0000; border-color: #ff0000; }
