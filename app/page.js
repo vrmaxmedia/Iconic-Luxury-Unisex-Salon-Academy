@@ -500,13 +500,14 @@ END:VCARD`;
     CLIENT_CONFIG.cleanPhone || CLIENT_CONFIG.phone || CLIENT_CONFIG.mapsDirectionUrl
   );
 
-  const hasLowerRow = Boolean(
-    CLIENT_CONFIG.instagramUrl ||
-      CLIENT_CONFIG.websiteUrl ||
-      CLIENT_CONFIG.whatsappChannelUrl ||
-      CLIENT_CONFIG.facebookUrl ||
-      CLIENT_CONFIG.youtubeUrl
-  );
+  // Instagram, Facebook aur Website buttons hamesha dikhte hain
+  const hasLowerRow = true;
+
+  // URL khali ho to button dikhega, par click par kuchh nahi hoga (URL daalte hi chalne lagega)
+  const socialLinkProps = (url) =>
+    url
+      ? { href: url, target: "_blank", rel: "noreferrer" }
+      : { href: "#", onClick: (e) => e.preventDefault() };
 
   return (
     <main className="soft-luxury-viewport">
@@ -719,42 +720,47 @@ END:VCARD`;
               {hasLowerRow && (
                 <div className="action-row-lower">
                   {/* Instagram */}
-                  {CLIENT_CONFIG.instagramUrl && (
-                    <a
-                      href={CLIENT_CONFIG.instagramUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="soft-circle-action"
-                    >
-                      <div className="icon-disc insta-disc">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                        </svg>
-                      </div>
-                      <span className="icon-tag">Instagram</span>
-                    </a>
-                  )}
+                  <a
+                    {...socialLinkProps(CLIENT_CONFIG.instagramUrl)}
+                    className="soft-circle-action"
+                  >
+                    <div className="icon-disc insta-disc">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="5" ry="5" />
+                        <circle cx="12" cy="12" r="4" />
+                        <circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none" />
+                      </svg>
+                    </div>
+                    <span className="icon-tag">Instagram</span>
+                  </a>
+
+                  {/* Facebook */}
+                  <a
+                    {...socialLinkProps(CLIENT_CONFIG.facebookUrl)}
+                    className="soft-circle-action"
+                  >
+                    <div className="icon-disc fb-disc">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                      </svg>
+                    </div>
+                    <span className="icon-tag">Facebook</span>
+                  </a>
 
                   {/* Website */}
-                  {CLIENT_CONFIG.websiteUrl && (
-                    <a
-                      href={CLIENT_CONFIG.websiteUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="soft-circle-action"
-                    >
-                      <div className="icon-disc contact-disc">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10" />
-                          <line x1="2" y1="12" x2="22" y2="12" />
-                          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                        </svg>
-                      </div>
-                      <span className="icon-tag">Website</span>
-                    </a>
-                  )}
+                  <a
+                    {...socialLinkProps(CLIENT_CONFIG.websiteUrl)}
+                    className="soft-circle-action"
+                  >
+                    <div className="icon-disc contact-disc">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      </svg>
+                    </div>
+                    <span className="icon-tag">Website</span>
+                  </a>
 
                   {/* WhatsApp Channel */}
                   {CLIENT_CONFIG.whatsappChannelUrl && (
@@ -770,23 +776,6 @@ END:VCARD`;
                         </svg>
                       </div>
                       <span className="icon-tag">WA Channel</span>
-                    </a>
-                  )}
-
-                  {/* Facebook */}
-                  {CLIENT_CONFIG.facebookUrl && (
-                    <a
-                      href={CLIENT_CONFIG.facebookUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="soft-circle-action"
-                    >
-                      <div className="icon-disc fb-disc">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                        </svg>
-                      </div>
-                      <span className="icon-tag">Facebook</span>
                     </a>
                   )}
 
@@ -1363,28 +1352,18 @@ END:VCARD`;
         .map-disc:hover { background: #ea4335; border-color: #ea4335; }
         .map-disc:hover svg { stroke: #ffffff; }
 
-        /* Instagram: hamesha official gradient colors mein dikhega */
-        .insta-disc {
+        .insta-disc:hover {
           background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
           border-color: transparent;
         }
 
-        .insta-disc svg { stroke: #ffffff; }
-
-        .insta-disc:hover { filter: brightness(1.08); }
+        .insta-disc:hover svg { stroke: #ffffff; }
 
         .wa-channel-disc:hover { background: #25d366; border-color: #25d366; }
         .wa-channel-disc:hover svg { stroke: #ffffff; }
 
-        /* Facebook: hamesha official blue mein dikhega */
-        .fb-disc {
-          background: #1877f2;
-          border-color: #1877f2;
-        }
-
-        .fb-disc svg { stroke: #ffffff; }
-
-        .fb-disc:hover { filter: brightness(1.08); }
+        .fb-disc:hover { background: #1877f2; border-color: #1877f2; }
+        .fb-disc:hover svg { stroke: #ffffff; }
 
         .yt-disc:hover { background: #ff0000; border-color: #ff0000; }
         .yt-disc:hover svg { stroke: #ffffff; color: #ffffff; }
