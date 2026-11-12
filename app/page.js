@@ -23,11 +23,12 @@ const CLIENT_CONFIG = {
   cleanPhone: "919580997664",
 
   // Instagram, Facebook aur Website buttons hamesha page par dikhte hain.
-  // Bas inke andar apna link paste kar do, button usi link par khulne lagega.
+  // Abhi Facebook aur Website mein TESTING wale links hain.
+  // Asli link aane par bas inhe replace kar dena.
   instagramUrl:
     "https://www.instagram.com/iconicluxuryunisexsalon?dlrf=MWVxYW4xZWsxYWY4eQ==",
-  facebookUrl: "", // <-- yahan Facebook page ka link paste karo
-  websiteUrl: "", // <-- yahan Website ka link paste karo
+  facebookUrl: "https://www.facebook.com/facebook", // <-- testing link, baad mein asli Facebook page ka link daalna
+  websiteUrl: "https://www.google.com", // <-- testing link, baad mein asli Website ka link daalna
   youtubeUrl: "",
   whatsappChannelUrl: "",
 
@@ -502,14 +503,9 @@ END:VCARD`;
     CLIENT_CONFIG.cleanPhone || CLIENT_CONFIG.phone || CLIENT_CONFIG.mapsDirectionUrl
   );
 
-  // Instagram, Facebook aur Website buttons hamesha dikhte hain
-  const hasLowerRow = true;
-
-  // URL khali ho to button dikhega, par click par kuchh nahi hoga (URL daalte hi chalne lagega)
-  const socialLinkProps = (url) =>
-    url
-      ? { href: url, target: "_blank", rel: "noreferrer" }
-      : { href: "#", onClick: (e) => e.preventDefault() };
+  // Purani social row band hai. Ab Instagram/Facebook/Website ke simple
+  // buttons neeche "Simple Social Buttons" block mein alag se dikhte hain.
+  const hasLowerRow = false;
 
   return (
     <main className="soft-luxury-viewport">
@@ -718,91 +714,46 @@ END:VCARD`;
                   )}
                 </div>
               )}
-
-              {hasLowerRow && (
-                <div className="action-row-lower">
-                  {/* Instagram */}
-                  <a
-                    {...socialLinkProps(CLIENT_CONFIG.instagramUrl)}
-                    className="soft-circle-action"
-                  >
-                    <div className="icon-disc insta-disc">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="5" ry="5" />
-                        <circle cx="12" cy="12" r="4" />
-                        <circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none" />
-                      </svg>
-                    </div>
-                    <span className="icon-tag">Instagram</span>
-                  </a>
-
-                  {/* Facebook */}
-                  <a
-                    {...socialLinkProps(CLIENT_CONFIG.facebookUrl)}
-                    className="soft-circle-action"
-                  >
-                    <div className="icon-disc fb-disc">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                      </svg>
-                    </div>
-                    <span className="icon-tag">Facebook</span>
-                  </a>
-
-                  {/* Website */}
-                  <a
-                    {...socialLinkProps(CLIENT_CONFIG.websiteUrl)}
-                    className="soft-circle-action"
-                  >
-                    <div className="icon-disc contact-disc">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="2" y1="12" x2="22" y2="12" />
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                      </svg>
-                    </div>
-                    <span className="icon-tag">Website</span>
-                  </a>
-
-                  {/* WhatsApp Channel */}
-                  {CLIENT_CONFIG.whatsappChannelUrl && (
-                    <a
-                      href={CLIENT_CONFIG.whatsappChannelUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="soft-circle-action"
-                    >
-                      <div className="icon-disc wa-channel-disc">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                        </svg>
-                      </div>
-                      <span className="icon-tag">WA Channel</span>
-                    </a>
-                  )}
-
-                  {/* YouTube */}
-                  {CLIENT_CONFIG.youtubeUrl && (
-                    <a
-                      href={CLIENT_CONFIG.youtubeUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="soft-circle-action"
-                    >
-                      <div className="icon-disc yt-disc">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
-                          <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" />
-                        </svg>
-                      </div>
-                      <span className="icon-tag">YouTube</span>
-                    </a>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         )}
+
+        {/* Simple Social Buttons: Instagram, Facebook, Website (hamesha visible) */}
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: "10px",
+            margin: "0 0 16px",
+          }}
+        >
+          {[
+            { label: "Instagram", url: CLIENT_CONFIG.instagramUrl },
+            { label: "Facebook", url: CLIENT_CONFIG.facebookUrl },
+            { label: "Website", url: CLIENT_CONFIG.websiteUrl },
+          ].map((item) => (
+            <a
+              key={item.label}
+              href={item.url || "#"}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                padding: "10px 18px",
+                borderRadius: "999px",
+                background: "#ffffff",
+                color: "#222222",
+                border: "1px solid #cccccc",
+                fontSize: "13px",
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
 
         {/* Map Card */}
         <div className="embedded-map-card">
