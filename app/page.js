@@ -60,7 +60,7 @@ const CLIENT_CONFIG = {
   instagramUrl:
     "https://www.instagram.com/iconicluxuryunisexsalon?dlrf=MWVxYW4xZWsxYWY4eQ==",
   facebookUrl: "https://www.facebook.com/facebook", // <-- testing link, baad mein asli Facebook page ka link daalna
-  websiteUrl: "https://www.google.com", // <-- testing link, baad mein asli Website ka link daalna
+  websiteUrl: "https://iconic-luxury-saloon.vercel.app/", // <-- testing link, baad mein asli Website ka link daalna
   youtubeUrl: "",
   whatsappChannelUrl: "",
 
