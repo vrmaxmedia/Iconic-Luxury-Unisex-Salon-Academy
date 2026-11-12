@@ -1,6 +1,35 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
+
+import photo1 from "../gallery/photo1.webp";
+import photo2 from "../gallery/photo2.webp";
+import photo3 from "../gallery/photo3.webp";
+import photo4 from "../gallery/photo4.webp";
+import photo5 from "../gallery/photo5.webp";
+import photo6 from "../gallery/photo6.webp";
+import photo7 from "../gallery/photo7.webp";
+import photo8 from "../gallery/photo8.webp";
+import photo9 from "../gallery/photo9.webp";
+import photo10 from "../gallery/photo10.webp";
+import photo11 from "../gallery/photo11.webp";
+import photo12 from "../gallery/photo12.webp";
+
+const GALLERY_IMAGES = [
+  photo1,
+  photo2,
+  photo3,
+  photo4,
+  photo5,
+  photo6,
+  photo7,
+  photo8,
+  photo9,
+  photo10,
+  photo11,
+  photo12,
+];
 
 const CLIENT_CONFIG = {
   clientId: "iconic_luxury_salon_01",
@@ -146,7 +175,8 @@ function buildTheme(r, g, b, avgLuma) {
 
 function extractThemeFromImage(url) {
   return new Promise((resolve) => {
-    const img = new Image();
+    // window.Image use kiya hai kyunki upar next/image ka "Image" import hai
+    const img = new window.Image();
 
     img.onload = () => {
       try {
@@ -297,6 +327,10 @@ export default function UniversalReviewPage() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
 
+  // Gallery state
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const galleryTouchStartXRef = useRef(0);
+
   const abortControllerRef = useRef(null);
   const requestIdRef = useRef(0);
   const recentLengthsRef = useRef([]);
@@ -327,6 +361,51 @@ export default function UniversalReviewPage() {
       cancelled = true;
     };
   }, []);
+
+  // Gallery automatic sliding - every 3 seconds
+  useEffect(() => {
+    if (!mounted) return;
+
+    const galleryTimer = window.setInterval(() => {
+      setGalleryIndex((current) => (current + 1) % GALLERY_IMAGES.length);
+    }, 3000);
+
+    return () => window.clearInterval(galleryTimer);
+  }, [mounted]);
+
+  // Manual touch swipe
+  function handleGalleryTouchStart(event) {
+    galleryTouchStartXRef.current = event.changedTouches[0].clientX;
+  }
+
+  function handleGalleryTouchEnd(event) {
+    const touchEndX = event.changedTouches[0].clientX;
+    const difference = galleryTouchStartXRef.current - touchEndX;
+
+    if (Math.abs(difference) < 45) return;
+
+    if (difference > 0) {
+      // Swipe left: next image
+      setGalleryIndex((current) => (current + 1) % GALLERY_IMAGES.length);
+    } else {
+      // Swipe right: previous image
+      setGalleryIndex(
+        (current) =>
+          (current - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length
+      );
+    }
+  }
+
+  function handleGalleryPrevious() {
+    setGalleryIndex(
+      (current) =>
+        (current - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length
+    );
+  }
+
+  function handleGalleryNext() {
+    setGalleryIndex((current) => (current + 1) % GALLERY_IMAGES.length);
+  }
 
   const generateAIReview = useCallback(async (labels, lang) => {
     abortControllerRef.current?.abort();
@@ -503,9 +582,15 @@ END:VCARD`;
     CLIENT_CONFIG.cleanPhone || CLIENT_CONFIG.phone || CLIENT_CONFIG.mapsDirectionUrl
   );
 
-  // Purani social row band hai. Ab Instagram/Facebook/Website ke simple
-  // buttons neeche "Simple Social Buttons" block mein alag se dikhte hain.
-  const hasLowerRow = false;
+  // Instagram, Facebook, Website (aur optional WA Channel / YouTube)
+  // ab neeche wali row mein 3D circle buttons ki tarah dikhte hain.
+  const hasLowerRow = Boolean(
+    CLIENT_CONFIG.instagramUrl ||
+      CLIENT_CONFIG.facebookUrl ||
+      CLIENT_CONFIG.websiteUrl ||
+      CLIENT_CONFIG.whatsappChannelUrl ||
+      CLIENT_CONFIG.youtubeUrl
+  );
 
   return (
     <main className="soft-luxury-viewport">
@@ -555,6 +640,7 @@ END:VCARD`;
                 key={chip.label}
                 type="button"
                 onClick={() => handleChipChange(chip)}
+                aria-pressed={active}
                 className={`embossed-pill ${active ? "active" : ""}`}
               >
                 {chip.label}
@@ -575,6 +661,7 @@ END:VCARD`;
                 key={lang}
                 type="button"
                 onClick={() => handleLanguageChange(lang)}
+                aria-pressed={active}
                 className={`capsule-lang-btn ${active ? "active" : ""}`}
               >
                 {lang}
@@ -714,46 +801,228 @@ END:VCARD`;
                   )}
                 </div>
               )}
+
+              {hasLowerRow && (
+                <div className="action-row-lower">
+                  {/* Instagram */}
+                  {CLIENT_CONFIG.instagramUrl && (
+                    <a
+                      href={CLIENT_CONFIG.instagramUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="soft-circle-action"
+                    >
+                      <div className="icon-disc insta-disc">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                        </svg>
+                      </div>
+                      <span className="icon-tag">Instagram</span>
+                    </a>
+                  )}
+
+                  {/* Website */}
+                  {CLIENT_CONFIG.websiteUrl && (
+                    <a
+                      href={CLIENT_CONFIG.websiteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="soft-circle-action"
+                    >
+                      <div className="icon-disc contact-disc">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="2" y1="12" x2="22" y2="12" />
+                          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg>
+                      </div>
+                      <span className="icon-tag">Website</span>
+                    </a>
+                  )}
+
+                  {/* WhatsApp Channel */}
+                  {CLIENT_CONFIG.whatsappChannelUrl && (
+                    <a
+                      href={CLIENT_CONFIG.whatsappChannelUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="soft-circle-action"
+                    >
+                      <div className="icon-disc wa-channel-disc">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                      </div>
+                      <span className="icon-tag">WA Channel</span>
+                    </a>
+                  )}
+
+                  {/* Facebook */}
+                  {CLIENT_CONFIG.facebookUrl && (
+                    <a
+                      href={CLIENT_CONFIG.facebookUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="soft-circle-action"
+                    >
+                      <div className="icon-disc fb-disc">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                        </svg>
+                      </div>
+                      <span className="icon-tag">Facebook</span>
+                    </a>
+                  )}
+
+                  {/* YouTube */}
+                  {CLIENT_CONFIG.youtubeUrl && (
+                    <a
+                      href={CLIENT_CONFIG.youtubeUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="soft-circle-action"
+                    >
+                      <div className="icon-disc yt-disc">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
+                          <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" />
+                        </svg>
+                      </div>
+                      <span className="icon-tag">YouTube</span>
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* Simple Social Buttons: Instagram, Facebook, Website (hamesha visible) */}
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            gap: "10px",
-            margin: "0 0 16px",
-          }}
-        >
-          {[
-            { label: "Instagram", url: CLIENT_CONFIG.instagramUrl },
-            { label: "Facebook", url: CLIENT_CONFIG.facebookUrl },
-            { label: "Website", url: CLIENT_CONFIG.websiteUrl },
-          ].map((item) => (
-            <a
-              key={item.label}
-              href={item.url || "#"}
-              target="_blank"
-              rel="noreferrer"
+        {/* =========================================
+            PREMIUM SALON PHOTO GALLERY
+            12 STATIC IMAGES - NO API / NO URL LIST
+            ========================================= */}
+
+        <section className="cafe-gallery-section" aria-label="Salon photo gallery">
+          <div className="gallery-heading">
+            <span className="gallery-eyebrow">A GLIMPSE OF ICONIC</span>
+
+            <h2 className="gallery-title">Explore Our Salon</h2>
+
+            <p className="gallery-subtitle">
+              Styles, looks & moments worth sharing
+            </p>
+          </div>
+
+          <div
+            className="gallery-slider"
+            onTouchStart={handleGalleryTouchStart}
+            onTouchEnd={handleGalleryTouchEnd}
+            onTouchCancel={() => {
+              galleryTouchStartXRef.current = 0;
+            }}
+          >
+            <div
+              className="gallery-track"
               style={{
-                padding: "10px 18px",
-                borderRadius: "999px",
-                background: "#ffffff",
-                color: "#222222",
-                border: "1px solid #cccccc",
-                fontSize: "13px",
-                fontWeight: 600,
-                textDecoration: "none",
+                transform: `translateX(-${galleryIndex * 100}%)`,
               }}
             >
-              {item.label}
-            </a>
-          ))}
-        </div>
+              {GALLERY_IMAGES.map((image, index) => (
+                <div
+                  className="gallery-slide"
+                  key={`iconic-gallery-${index + 1}`}
+                >
+                  <div className="gallery-image-frame">
+                    <Image
+                      src={image}
+                      alt={`Iconic Luxury Unisex Salon gallery photo ${index + 1}`}
+                      fill
+                      sizes="(max-width: 410px) 100vw, 410px"
+                      quality={90}
+                      priority={index === 0}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      draggable={false}
+                      style={{
+                        objectFit: "contain",
+                        padding: "7px",
+                        boxSizing: "border-box",
+                        userSelect: "none",
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Previous Slide */}
+            <button
+              type="button"
+              className="gallery-arrow gallery-arrow-left"
+              onClick={handleGalleryPrevious}
+              aria-label="Previous gallery photo"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="19"
+                height="19"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+
+            {/* Next Slide */}
+            <button
+              type="button"
+              className="gallery-arrow gallery-arrow-right"
+              onClick={handleGalleryNext}
+              aria-label="Next gallery photo"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="19"
+                height="19"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Gallery indicators */}
+          <div className="gallery-bottom-controls">
+            <div className="gallery-dots" aria-label="Gallery slides">
+              {GALLERY_IMAGES.map((_, index) => (
+                <button
+                  key={`gallery-dot-${index + 1}`}
+                  type="button"
+                  className={`gallery-dot ${
+                    galleryIndex === index ? "active" : ""
+                  }`}
+                  onClick={() => setGalleryIndex(index)}
+                  aria-label={`Show photo ${index + 1}`}
+                  aria-current={galleryIndex === index ? "true" : undefined}
+                />
+              ))}
+            </div>
+
+            <span className="gallery-counter">
+              {String(galleryIndex + 1).padStart(2, "0")}
+              <span className="gallery-counter-divider"> / </span>
+              {String(GALLERY_IMAGES.length).padStart(2, "0")}
+            </span>
+          </div>
+        </section>
 
         {/* Map Card */}
         <div className="embedded-map-card">
@@ -840,6 +1109,7 @@ END:VCARD`;
           padding: 0 !important;
           background: var(--c-page) !important;
           min-height: 100% !important;
+          overflow-x: hidden !important;
           transition: background 0.4s ease;
         }
 
@@ -1004,64 +1274,149 @@ END:VCARD`;
           width: 100%;
         }
 
-        /* Soft chips */
+        /* =========================================
+           PREMIUM 3D FILTER CHIPS
+           ========================================= */
+
         .embossed-pill {
+          position: relative;
           border-radius: 999px;
-          padding: 5px 11px;
+          padding: 6px 12px;
           font-size: 11.5px;
-          background: rgba(var(--c-surface-rgb), 0.88);
+
+          background: var(--c-surface);
+          background: linear-gradient(
+            145deg,
+            var(--c-surface) 0%,
+            var(--c-soft) 100%
+          );
+
           color: var(--c-muted);
           border: 1px solid var(--c-border);
+
           cursor: pointer;
-          box-shadow: 0 2px 5px rgba(var(--c-primary-rgb), 0.08);
+
+          box-shadow:
+            0 4px 7px rgba(var(--c-primary-rgb), 0.10),
+            0 1px 2px rgba(var(--c-primary-rgb), 0.06),
+            inset 0 1px 1px rgba(255, 255, 255, 0.95),
+            inset 0 -1px 1px rgba(var(--c-primary-rgb), 0.08);
+
           transition:
+            transform 0.16s ease,
+            box-shadow 0.16s ease,
             background 0.18s ease,
             color 0.18s ease,
-            border-color 0.18s ease,
-            box-shadow 0.18s ease,
-            transform 0.16s ease;
+            border-color 0.18s ease;
+        }
+
+        .embossed-pill:hover {
+          transform: translateY(-2px);
+          box-shadow:
+            0 6px 10px rgba(var(--c-primary-rgb), 0.13),
+            inset 0 1px 1px rgba(255, 255, 255, 0.95);
         }
 
         .embossed-pill:active {
-          transform: scale(0.97);
+          transform: translateY(2px) scale(0.98);
+          box-shadow:
+            0 1px 3px rgba(var(--c-primary-rgb), 0.12),
+            inset 0 2px 4px rgba(var(--c-primary-rgb), 0.10);
         }
 
         /* Selected chip */
         .embossed-pill.active {
           background: var(--c-primary);
+          background: linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--c-primary) 82%, #ffffff) 0%,
+            var(--c-primary) 100%
+          );
+
           color: #ffffff;
-          border-color: var(--c-primary);
-          box-shadow: 0 3px 9px rgba(var(--c-primary-rgb), 0.24);
+          border: 1px solid var(--c-primary);
+
+          box-shadow:
+            0 5px 10px rgba(var(--c-primary-rgb), 0.25),
+            0 2px 3px rgba(var(--c-primary-rgb), 0.15),
+            inset 0 1px 1px rgba(255, 255, 255, 0.22),
+            inset 0 -2px 2px rgba(0, 0, 0, 0.18);
         }
+
+        .embossed-pill.active:active {
+          transform: translateY(2px);
+          box-shadow:
+            0 1px 3px rgba(var(--c-primary-rgb), 0.20),
+            inset 0 2px 4px rgba(0, 0, 0, 0.18);
+        }
+
+        /* =========================================
+           PREMIUM 3D LANGUAGE SELECTOR
+           ========================================= */
 
         .capsule-lang-dock {
           display: inline-flex;
-          background: rgba(var(--c-surface-rgb), 0.92);
+          background: var(--c-surface);
+          background: linear-gradient(
+            145deg,
+            var(--c-surface),
+            var(--c-soft)
+          );
+
           border-radius: 999px;
-          padding: 3px;
-          gap: 2px;
+          padding: 4px;
+          gap: 3px;
           margin: 0 auto 12px;
-          box-shadow: 0 3px 8px rgba(var(--c-primary-rgb), 0.09);
+
+          box-shadow:
+            0 5px 12px rgba(var(--c-primary-rgb), 0.11),
+            inset 0 1px 2px rgba(255, 255, 255, 0.95);
+
           border: 1px solid var(--c-border);
         }
 
         .capsule-lang-btn {
-          padding: 5px 18px;
+          position: relative;
+          padding: 6px 19px;
           border-radius: 999px;
-          border: none;
+          border: 1px solid transparent;
           background: transparent;
           font-size: 10px;
           font-weight: 700;
           color: var(--c-muted);
           cursor: pointer;
+
+          transition:
+            transform 0.16s ease,
+            background 0.18s ease,
+            box-shadow 0.18s ease;
         }
 
         /* Selected language */
         .capsule-lang-btn.active {
           background: var(--c-primary);
+          background: linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--c-primary) 82%, #ffffff),
+            var(--c-primary)
+          );
+
           color: #ffffff;
-          box-shadow: 0 2px 7px rgba(var(--c-primary-rgb), 0.22);
+          border-color: var(--c-primary);
+
+          box-shadow:
+            0 4px 8px rgba(var(--c-primary-rgb), 0.23),
+            inset 0 1px 1px rgba(255, 255, 255, 0.20),
+            inset 0 -2px 2px rgba(0, 0, 0, 0.15);
         }
+
+        .capsule-lang-btn:active {
+          transform: translateY(2px);
+        }
+
+        /* =========================================
+           REVIEW CARD
+           ========================================= */
 
         .signature-review-box {
           width: 100%;
@@ -1102,27 +1457,61 @@ END:VCARD`;
           background: var(--c-accent);
         }
 
+        /* =========================================
+           PREMIUM 3D REWRITE BUTTON
+           ========================================= */
+
         .top-rewrite-btn {
+          position: relative;
           display: inline-flex;
           align-items: center;
-          padding: 4px 10px;
+
+          padding: 6px 13px;
           border-radius: 999px;
+
           background: var(--c-soft);
+          background: linear-gradient(
+            145deg,
+            var(--c-surface) 0%,
+            var(--c-soft) 100%
+          );
+
           border: 1px solid var(--c-border);
           color: var(--c-primary);
+
           font-size: 10.5px;
-          font-weight: 650;
+          font-weight: 700;
+
           cursor: pointer;
-          transition: transform 0.15s ease;
+
+          box-shadow:
+            0 3px 6px rgba(var(--c-primary-rgb), 0.10),
+            inset 0 1px 1px rgba(255, 255, 255, 0.95),
+            inset 0 -1px 2px rgba(var(--c-primary-rgb), 0.10);
+
+          transition:
+            transform 0.16s ease,
+            box-shadow 0.16s ease,
+            background 0.18s ease;
+        }
+
+        .top-rewrite-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow:
+            0 5px 9px rgba(var(--c-primary-rgb), 0.14),
+            inset 0 1px 1px rgba(255, 255, 255, 0.95);
+        }
+
+        .top-rewrite-btn:active:not(:disabled) {
+          transform: translateY(2px);
+          box-shadow:
+            0 1px 2px rgba(var(--c-primary-rgb), 0.12),
+            inset 0 2px 3px rgba(var(--c-primary-rgb), 0.15);
         }
 
         .top-rewrite-btn:disabled {
           opacity: 0.55;
           cursor: not-allowed;
-        }
-
-        .top-rewrite-btn:active:not(:disabled) {
-          transform: scale(0.95);
         }
 
         .review-display-zone {
@@ -1185,33 +1574,71 @@ END:VCARD`;
           margin: 6px 0 10px;
         }
 
+        /* =========================================
+           PREMIUM 3D MAIN COPY BUTTON
+           ========================================= */
+
         .full-luxury-copy-btn {
+          position: relative;
+          overflow: hidden;
+
           width: 100%;
           height: 50px;
           border-radius: 999px;
+
           background: var(--c-primary);
-          border: none;
+          background: linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--c-primary) 80%, #ffffff) 0%,
+            var(--c-primary) 48%,
+            color-mix(in srgb, var(--c-primary) 85%, #000000) 100%
+          );
+
+          border: 1px solid var(--c-primary);
           color: #ffffff;
+
           font-size: 12px;
           font-weight: 750;
           cursor: pointer;
-          box-shadow: 0 6px 16px rgba(var(--c-primary-rgb), 0.25);
-          transition: transform 0.15s ease, background 0.18s ease, box-shadow 0.18s ease;
+
+          box-shadow:
+            0 7px 13px rgba(var(--c-primary-rgb), 0.24),
+            0 3px 5px rgba(var(--c-primary-rgb), 0.16),
+            inset 0 1px 1px rgba(255, 255, 255, 0.23),
+            inset 0 -2px 3px rgba(0, 0, 0, 0.20);
+
+          transition:
+            transform 0.16s ease,
+            background 0.18s ease,
+            box-shadow 0.16s ease,
+            opacity 0.18s ease;
+        }
+
+        .full-luxury-copy-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+
+          box-shadow:
+            0 10px 17px rgba(var(--c-primary-rgb), 0.27),
+            0 4px 7px rgba(var(--c-primary-rgb), 0.16),
+            inset 0 1px 1px rgba(255, 255, 255, 0.25);
+        }
+
+        .full-luxury-copy-btn:active:not(:disabled) {
+          transform: translateY(2px);
+
+          box-shadow:
+            0 2px 4px rgba(var(--c-primary-rgb), 0.20),
+            inset 0 3px 5px rgba(0, 0, 0, 0.20);
         }
 
         .full-luxury-copy-btn.copied {
-          background: var(--c-primary);
           filter: brightness(0.85);
-          box-shadow: 0 5px 14px rgba(var(--c-primary-rgb), 0.24);
         }
 
         .full-luxury-copy-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
-        }
-
-        .full-luxury-copy-btn:active:not(:disabled) {
-          transform: scale(0.98);
+          box-shadow: none;
         }
 
         .card-disclaimer-note {
@@ -1222,14 +1649,23 @@ END:VCARD`;
           font-style: italic;
         }
 
+        /* =========================================
+           QUICK ACTIONS CARD
+           ========================================= */
+
         .quick-actions-card {
           width: 100%;
           background: rgba(var(--c-surface-rgb), 0.93);
           border-radius: 22px;
           padding: 18px 12px;
           box-sizing: border-box;
+
           border: 1px solid var(--c-border);
-          box-shadow: 0 8px 23px rgba(var(--c-primary-rgb), 0.11);
+
+          box-shadow:
+            0 8px 23px rgba(var(--c-primary-rgb), 0.11),
+            inset 0 1px 1px rgba(255, 255, 255, 0.85);
+
           margin-bottom: 16px;
         }
 
@@ -1256,72 +1692,496 @@ END:VCARD`;
           width: 100%;
         }
 
+        /* =========================================
+           PREMIUM 3D ACTION BUTTONS
+           ========================================= */
+
         .soft-circle-action {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 5px;
+          justify-content: flex-start;
+          gap: 7px;
+
           text-decoration: none !important;
           color: var(--c-muted);
+
           background: transparent;
           border: none;
+
           cursor: pointer;
-          padding: 0;
-          transition: transform 0.15s ease;
+          padding: 3px 4px 5px;
+
+          -webkit-tap-highlight-color: transparent;
+
+          transition:
+            transform 0.18s ease,
+            color 0.18s ease;
+        }
+
+        .soft-circle-action:hover {
+          transform: translateY(-3px);
         }
 
         .soft-circle-action:active {
-          transform: scale(0.92);
+          transform: translateY(2px) scale(0.97);
+        }
+
+        .soft-circle-action:focus-visible {
+          outline: 2px solid var(--c-accent);
+          outline-offset: 4px;
+          border-radius: 14px;
         }
 
         .icon-disc {
-          width: 50px;
-          height: 50px;
+          position: relative;
+
+          width: 54px;
+          height: 54px;
           border-radius: 50%;
+
           background: var(--c-soft);
+          background: linear-gradient(
+            145deg,
+            var(--c-surface) 0%,
+            var(--c-soft) 100%
+          );
+
           display: grid;
           place-items: center;
-          box-shadow: 0 4px 11px rgba(var(--c-primary-rgb), 0.09);
+
           border: 1px solid var(--c-border);
-          transition: all 0.2s ease;
+
+          box-shadow:
+            0 7px 12px rgba(var(--c-primary-rgb), 0.13),
+            0 2px 4px rgba(var(--c-primary-rgb), 0.08),
+            inset 0 2px 3px rgba(255, 255, 255, 0.95),
+            inset 0 -2px 3px rgba(var(--c-primary-rgb), 0.10);
+
+          transition:
+            transform 0.18s ease,
+            box-shadow 0.18s ease,
+            background 0.18s ease,
+            border-color 0.18s ease;
         }
 
+        /* Soft inner highlight */
+        .icon-disc::before {
+          content: "";
+          position: absolute;
+          top: 3px;
+          left: 7px;
+          right: 7px;
+          height: 35%;
+          border-radius: 50%;
+
+          background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.45),
+            rgba(255, 255, 255, 0)
+          );
+
+          pointer-events: none;
+        }
+
+        /* Icon depth */
         .icon-disc svg {
-          width: 20px;
-          height: 20px;
+          position: relative;
+          z-index: 1;
+
+          width: 21px;
+          height: 21px;
+
           stroke: var(--c-primary);
-          transition: stroke 0.2s ease;
+          stroke-width: 1.8;
+
+          filter: drop-shadow(
+            0 1px 0 rgba(255, 255, 255, 0.65)
+          );
+
+          transition:
+            stroke 0.18s ease,
+            transform 0.18s ease;
         }
 
-        .whatsapp-disc:hover { background: #25d366; border-color: #25d366; }
-        .whatsapp-disc:hover svg { stroke: #ffffff; }
+        .soft-circle-action:hover .icon-disc {
+          transform: translateY(-2px);
 
-        .call-disc:hover { background: #007aff; border-color: #007aff; }
-        .call-disc:hover svg { stroke: #ffffff; }
+          box-shadow:
+            0 10px 16px rgba(var(--c-primary-rgb), 0.16),
+            0 3px 5px rgba(var(--c-primary-rgb), 0.09),
+            inset 0 2px 3px rgba(255, 255, 255, 0.95);
+        }
 
-        .contact-disc:hover { background: var(--c-primary); border-color: var(--c-primary); }
-        .contact-disc:hover svg { stroke: #ffffff; }
+        .soft-circle-action:active .icon-disc {
+          transform: translateY(2px);
 
-        .map-disc:hover { background: #ea4335; border-color: #ea4335; }
-        .map-disc:hover svg { stroke: #ffffff; }
-
-        .insta-disc:hover { background: var(--c-primary); border-color: var(--c-primary); }
-        .insta-disc:hover svg { stroke: #ffffff; }
-
-        .wa-channel-disc:hover { background: #25d366; border-color: #25d366; }
-        .wa-channel-disc:hover svg { stroke: #ffffff; }
-
-        .fb-disc:hover { background: var(--c-primary); border-color: var(--c-primary); }
-        .fb-disc:hover svg { stroke: #ffffff; }
-
-        .yt-disc:hover { background: #ff0000; border-color: #ff0000; }
-        .yt-disc:hover svg { stroke: #ffffff; color: #ffffff; }
+          box-shadow:
+            0 2px 4px rgba(var(--c-primary-rgb), 0.13),
+            inset 0 3px 5px rgba(var(--c-primary-rgb), 0.14);
+        }
 
         .icon-tag {
           font-size: 9.5px;
           font-weight: 700;
           color: var(--c-muted);
+          line-height: 1.3;
+          white-space: nowrap;
+          transition: color 0.18s ease;
         }
+
+        /* WhatsApp */
+        .whatsapp-disc:hover {
+          background: linear-gradient(145deg, #42e486, #1aaf58);
+          border-color: #169c4d;
+          box-shadow:
+            0 7px 14px rgba(37, 211, 102, 0.25),
+            inset 0 2px 3px rgba(255, 255, 255, 0.35);
+        }
+
+        .whatsapp-disc:hover svg {
+          stroke: #ffffff;
+        }
+
+        /* Call */
+        .call-disc:hover {
+          background: linear-gradient(145deg, #45a4ff, #0874d1);
+          border-color: #0868bd;
+          box-shadow:
+            0 7px 14px rgba(0, 122, 255, 0.22),
+            inset 0 2px 3px rgba(255, 255, 255, 0.35);
+        }
+
+        .call-disc:hover svg {
+          stroke: #ffffff;
+        }
+
+        /* Contact and Website */
+        .contact-disc:hover {
+          background: var(--c-primary);
+          background: linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--c-primary) 80%, #ffffff),
+            var(--c-primary)
+          );
+          border-color: var(--c-primary);
+          box-shadow:
+            0 7px 14px rgba(var(--c-primary-rgb), 0.23),
+            inset 0 2px 3px rgba(255, 255, 255, 0.28);
+        }
+
+        .contact-disc:hover svg {
+          stroke: #ffffff;
+        }
+
+        /* Directions */
+        .map-disc:hover {
+          background: linear-gradient(145deg, #ff776b, #e34539);
+          border-color: #cf382e;
+          box-shadow:
+            0 7px 14px rgba(234, 67, 53, 0.22),
+            inset 0 2px 3px rgba(255, 255, 255, 0.30);
+        }
+
+        .map-disc:hover svg {
+          stroke: #ffffff;
+        }
+
+        /* Instagram */
+        .insta-disc:hover {
+          background: radial-gradient(
+            circle at 30% 107%,
+            #fdf497 0%,
+            #fdf497 5%,
+            #fd5949 45%,
+            #d6249f 60%,
+            #285AEB 90%
+          );
+
+          border-color: #d6249f;
+
+          box-shadow:
+            0 7px 14px rgba(214, 36, 159, 0.20),
+            inset 0 2px 3px rgba(255, 255, 255, 0.30);
+        }
+
+        .insta-disc:hover svg {
+          stroke: #ffffff;
+        }
+
+        /* WhatsApp Channel */
+        .wa-channel-disc:hover {
+          background: linear-gradient(145deg, #42e486, #1aaf58);
+          border-color: #169c4d;
+        }
+
+        .wa-channel-disc:hover svg {
+          stroke: #ffffff;
+        }
+
+        /* Facebook */
+        .fb-disc:hover {
+          background: linear-gradient(145deg, #4095ff, #1877f2);
+          border-color: #1266cf;
+          box-shadow:
+            0 7px 14px rgba(24, 119, 242, 0.22),
+            inset 0 2px 3px rgba(255, 255, 255, 0.30);
+        }
+
+        .fb-disc:hover svg {
+          stroke: #ffffff;
+        }
+
+        /* YouTube */
+        .yt-disc:hover {
+          background: linear-gradient(145deg, #ff4848, #cc0000);
+          border-color: #b00000;
+          box-shadow:
+            0 7px 14px rgba(255, 0, 0, 0.20),
+            inset 0 2px 3px rgba(255, 255, 255, 0.30);
+        }
+
+        .yt-disc:hover svg {
+          stroke: #ffffff;
+          color: #ffffff;
+        }
+
+        /* =========================================
+           PREMIUM SALON GALLERY
+           ========================================= */
+
+        .cafe-gallery-section {
+          width: 100%;
+          box-sizing: border-box;
+          padding: 17px 13px 14px;
+          margin: 0 0 16px;
+
+          background: rgba(var(--c-surface-rgb), 0.94);
+          border: 1px solid var(--c-border);
+          border-radius: 22px;
+
+          box-shadow:
+            0 9px 24px rgba(var(--c-primary-rgb), 0.11),
+            inset 0 1px 1px rgba(255, 255, 255, 0.85);
+
+          overflow: hidden;
+        }
+
+        .gallery-heading {
+          text-align: center;
+          margin: 0 0 13px;
+        }
+
+        .gallery-eyebrow {
+          display: inline-block;
+          color: var(--c-muted);
+          font-size: 8px;
+          font-weight: 800;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          margin-bottom: 5px;
+        }
+
+        .gallery-title {
+          font-family: Georgia, serif;
+          color: var(--c-primary);
+          font-size: 21px;
+          font-weight: 800;
+          line-height: 1.2;
+          margin: 0 0 5px;
+        }
+
+        .gallery-subtitle {
+          color: var(--c-muted);
+          font-family: Georgia, serif;
+          font-size: 11px;
+          font-style: italic;
+          line-height: 1.4;
+          margin: 0;
+        }
+
+        .gallery-slider {
+          position: relative;
+          width: 100%;
+          overflow: hidden;
+          border-radius: 17px;
+          background: var(--c-soft);
+
+          touch-action: pan-y;
+          user-select: none;
+          -webkit-user-select: none;
+        }
+
+        .gallery-track {
+          display: flex;
+          width: 100%;
+
+          transition: transform 650ms cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+          );
+
+          will-change: transform;
+        }
+
+        .gallery-slide {
+          flex: 0 0 100%;
+          width: 100%;
+          min-width: 100%;
+          box-sizing: border-box;
+        }
+
+        /*
+          All photos use the same 4:3 frame.
+          object-fit: contain keeps the complete image visible.
+          Portrait and landscape images will not be cropped.
+        */
+
+        .gallery-image-frame {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 4 / 3;
+          min-height: 210px;
+          max-height: 290px;
+
+          overflow: hidden;
+          border-radius: 17px;
+
+          background: var(--c-soft);
+          background: linear-gradient(
+            145deg,
+            var(--c-surface) 0%,
+            var(--c-soft) 100%
+          );
+
+          border: 1px solid var(--c-border);
+
+          box-shadow:
+            0 4px 12px rgba(var(--c-primary-rgb), 0.09),
+            inset 0 1px 2px rgba(255, 255, 255, 0.9);
+        }
+
+        .gallery-image-frame img {
+          user-select: none;
+          -webkit-user-drag: none;
+        }
+
+        /* Subtle previous / next controls */
+
+        .gallery-arrow {
+          position: absolute;
+          z-index: 2;
+          top: 50%;
+          transform: translateY(-50%);
+
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+
+          display: grid;
+          place-items: center;
+
+          background: rgba(var(--c-surface-rgb), 0.91);
+          color: var(--c-primary);
+          border: 1px solid var(--c-border);
+
+          box-shadow:
+            0 3px 9px rgba(var(--c-primary-rgb), 0.18),
+            inset 0 1px 1px rgba(255, 255, 255, 0.95);
+
+          cursor: pointer;
+
+          transition:
+            background 0.18s ease,
+            transform 0.18s ease,
+            box-shadow 0.18s ease;
+
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .gallery-arrow-left {
+          left: 8px;
+        }
+
+        .gallery-arrow-right {
+          right: 8px;
+        }
+
+        .gallery-arrow:hover {
+          background: #ffffff;
+          box-shadow: 0 5px 12px rgba(var(--c-primary-rgb), 0.22);
+        }
+
+        .gallery-arrow:active {
+          transform: translateY(-50%) scale(0.91);
+        }
+
+        .gallery-arrow:focus-visible {
+          outline: 2px solid var(--c-accent);
+          outline-offset: 3px;
+        }
+
+        .gallery-bottom-controls {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          margin-top: 12px;
+          min-height: 12px;
+        }
+
+        .gallery-dots {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+        }
+
+        .gallery-dot {
+          appearance: none;
+          -webkit-appearance: none;
+
+          width: 6px;
+          height: 6px;
+          min-width: 6px;
+
+          padding: 0;
+          border: 0;
+          border-radius: 999px;
+
+          background: var(--c-border);
+          cursor: pointer;
+
+          transition:
+            width 350ms ease,
+            background 250ms ease,
+            box-shadow 250ms ease;
+        }
+
+        .gallery-dot.active {
+          width: 19px;
+          background: var(--c-primary);
+          box-shadow: 0 2px 5px rgba(var(--c-primary-rgb), 0.20);
+        }
+
+        .gallery-counter {
+          color: var(--c-muted);
+          font-size: 9px;
+          font-weight: 800;
+          letter-spacing: 0.6px;
+          font-variant-numeric: tabular-nums;
+        }
+
+        .gallery-counter-divider {
+          color: var(--c-accent);
+          padding: 0 2px;
+        }
+
+        /* =========================================
+           MAP CARD
+           ========================================= */
 
         .embedded-map-card {
           width: 100%;
@@ -1384,7 +2244,10 @@ END:VCARD`;
           text-align: center;
         }
 
-        /* Mini Footer */
+        /* =========================================
+           MINI FOOTER
+           ========================================= */
+
         .mini-footer {
           width: 100%;
           display: flex;
@@ -1421,6 +2284,59 @@ END:VCARD`;
           color: var(--c-primary);
           font-weight: 700;
           text-decoration: none;
+        }
+
+        /* =========================================
+           RESPONSIVE GALLERY
+           ========================================= */
+
+        @media (max-width: 360px) {
+          .cafe-gallery-section {
+            padding: 14px 10px 12px;
+          }
+
+          .gallery-title {
+            font-size: 19px;
+          }
+
+          .gallery-image-frame {
+            min-height: 190px;
+          }
+
+          .gallery-arrow {
+            width: 30px;
+            height: 30px;
+          }
+
+          .gallery-dots {
+            gap: 4px;
+          }
+        }
+
+        /* =========================================
+           ACCESSIBILITY & MOBILE TOUCH
+           ========================================= */
+
+        button,
+        a {
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus-visible,
+        a:focus-visible {
+          outline: 2px solid var(--c-accent);
+          outline-offset: 3px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          *,
+          *::before,
+          *::after {
+            scroll-behavior: auto !important;
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
         }
       `}</style>
     </main>
