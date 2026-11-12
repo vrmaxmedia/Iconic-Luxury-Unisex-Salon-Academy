@@ -51,6 +51,9 @@ const CLIENT_CONFIG = {
   phone: "+919580997664",
   cleanPhone: "919580997664",
 
+  // "Direct Call to Salon" button ka alag number
+  directCallPhone: "+918881616948",
+
   // Instagram, Facebook aur Website buttons hamesha page par dikhte hain.
   // Abhi Facebook aur Website mein TESTING wale links hain.
   // Asli link aane par bas inhe replace kar dena.
@@ -976,9 +979,9 @@ END:VCARD`;
 
             </div>
 
-            {/* Direct Call to Salon - Full Width Shining Button */}
+            {/* Direct Call to Salon - Slim Premium Button */}
             <a
-              href={`tel:${CLIENT_CONFIG.phone}`}
+              href={`tel:${CLIENT_CONFIG.directCallPhone}`}
               className="direct-call-btn"
               aria-label="Direct call to salon"
             >
@@ -2076,7 +2079,9 @@ END:VCARD`;
         }
 
         /* =========================================
-           DIRECT CALL TO SALON - SHINING 3D BUTTON
+           DIRECT CALL TO SALON - SLIM PREMIUM BUTTON
+           Color landing page theme (--c-accent) se
+           aata hai, isliye bg.png ke saath match karta hai.
            ========================================= */
 
         .direct-call-btn {
@@ -2084,15 +2089,16 @@ END:VCARD`;
           overflow: hidden;
           isolation: isolate;
 
-          width: 100%;
-          height: 54px;
+          width: 72%;
+          max-width: 250px;
+          height: 42px;
           border-radius: 999px;
           box-sizing: border-box;
 
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 10px;
+          gap: 8px;
 
           text-decoration: none !important;
           cursor: pointer;
@@ -2100,64 +2106,61 @@ END:VCARD`;
 
           background: linear-gradient(
             145deg,
-            #fff0b8 0%,
-            #f5c85a 28%,
-            #d99a2b 62%,
-            #a96d14 100%
+            color-mix(in srgb, var(--c-accent) 38%, #ffffff) 0%,
+            color-mix(in srgb, var(--c-accent) 70%, #ffffff) 55%,
+            var(--c-accent) 100%
           );
 
-          border: 1px solid #b97b1a;
-          color: #3a2306;
+          border: 1px solid color-mix(in srgb, var(--c-accent) 75%, var(--c-primary));
+          color: var(--c-primary);
 
           box-shadow:
-            0 9px 16px rgba(169, 109, 20, 0.34),
-            0 3px 6px rgba(var(--c-primary-rgb), 0.18),
-            0 0 18px rgba(245, 200, 90, 0.45),
-            inset 0 2px 2px rgba(255, 255, 255, 0.85),
-            inset 0 -3px 4px rgba(120, 70, 5, 0.35);
+            0 6px 12px rgba(var(--c-primary-rgb), 0.16),
+            0 2px 4px rgba(var(--c-primary-rgb), 0.10),
+            inset 0 1px 1px rgba(255, 255, 255, 0.80),
+            inset 0 -2px 3px rgba(var(--c-primary-rgb), 0.12);
 
           -webkit-tap-highlight-color: transparent;
 
-          animation: directCallGlow 2.6s ease-in-out infinite;
-
           transition:
             transform 0.16s ease,
-            filter 0.18s ease;
+            filter 0.18s ease,
+            box-shadow 0.18s ease;
         }
 
         /* Upar ki glossy highlight */
         .direct-call-btn::before {
           content: "";
           position: absolute;
-          top: 3px;
+          top: 2px;
           left: 14px;
           right: 14px;
-          height: 42%;
+          height: 38%;
           border-radius: 999px;
           background: linear-gradient(
             180deg,
-            rgba(255, 255, 255, 0.60),
+            rgba(255, 255, 255, 0.55),
             rgba(255, 255, 255, 0)
           );
           pointer-events: none;
           z-index: 1;
         }
 
-        /* Shining sweep effect */
+        /* Soft shining sweep effect */
         .direct-call-shine {
           position: absolute;
           top: -20%;
           left: -60%;
-          width: 38%;
+          width: 34%;
           height: 140%;
           background: linear-gradient(
             100deg,
             rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.85) 50%,
+            rgba(255, 255, 255, 0.60) 50%,
             rgba(255, 255, 255, 0) 100%
           );
           transform: skewX(-20deg);
-          animation: directCallShine 3s ease-in-out infinite;
+          animation: directCallShine 3.4s ease-in-out infinite;
           pointer-events: none;
           z-index: 2;
         }
@@ -2167,49 +2170,35 @@ END:VCARD`;
           55%, 100% { left: 130%; }
         }
 
-        @keyframes directCallGlow {
-          0%, 100% {
-            box-shadow:
-              0 9px 16px rgba(169, 109, 20, 0.34),
-              0 3px 6px rgba(var(--c-primary-rgb), 0.18),
-              0 0 14px rgba(245, 200, 90, 0.35),
-              inset 0 2px 2px rgba(255, 255, 255, 0.85),
-              inset 0 -3px 4px rgba(120, 70, 5, 0.35);
-          }
-          50% {
-            box-shadow:
-              0 9px 18px rgba(169, 109, 20, 0.40),
-              0 3px 6px rgba(var(--c-primary-rgb), 0.18),
-              0 0 26px rgba(255, 213, 107, 0.75),
-              inset 0 2px 2px rgba(255, 255, 255, 0.85),
-              inset 0 -3px 4px rgba(120, 70, 5, 0.35);
-          }
-        }
-
         .direct-call-icon {
           position: relative;
           z-index: 3;
 
-          width: 32px;
-          height: 32px;
+          width: 24px;
+          height: 24px;
           border-radius: 50%;
 
           display: grid;
           place-items: center;
 
-          background: linear-gradient(145deg, #5a3a0c, #2e1c04);
-          color: #ffe9a8;
+          background: var(--c-primary);
+          background: linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--c-primary) 82%, #ffffff),
+            var(--c-primary)
+          );
+          color: #ffffff;
 
           box-shadow:
-            0 3px 6px rgba(58, 35, 6, 0.40),
-            inset 0 1px 1px rgba(255, 255, 255, 0.30);
+            0 2px 4px rgba(var(--c-primary-rgb), 0.28),
+            inset 0 1px 1px rgba(255, 255, 255, 0.28);
         }
 
         .direct-call-icon svg {
-          width: 16px;
-          height: 16px;
+          width: 12px;
+          height: 12px;
           stroke: currentColor;
-          animation: directCallRing 2.2s ease-in-out infinite;
+          animation: directCallRing 2.4s ease-in-out infinite;
           transform-origin: center;
         }
 
@@ -2226,20 +2215,27 @@ END:VCARD`;
           position: relative;
           z-index: 3;
 
-          font-size: 13px;
-          font-weight: 800;
+          font-size: 11.5px;
+          font-weight: 700;
           letter-spacing: 0.5px;
-          color: #3a2306;
-          text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+          color: var(--c-primary);
+          text-shadow: 0 1px 0 rgba(255, 255, 255, 0.50);
         }
 
         .direct-call-btn:hover {
           transform: translateY(-2px);
-          filter: brightness(1.05);
+          filter: brightness(1.03);
+          box-shadow:
+            0 9px 15px rgba(var(--c-primary-rgb), 0.19),
+            0 3px 5px rgba(var(--c-primary-rgb), 0.10),
+            inset 0 1px 1px rgba(255, 255, 255, 0.85);
         }
 
         .direct-call-btn:active {
           transform: translateY(2px) scale(0.985);
+          box-shadow:
+            0 2px 4px rgba(var(--c-primary-rgb), 0.16),
+            inset 0 2px 4px rgba(var(--c-primary-rgb), 0.14);
         }
 
         .direct-call-btn:focus-visible {
