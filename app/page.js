@@ -13,9 +13,8 @@ const CLIENT_CONFIG = {
   fullAddress: "Golghar, near Mangalam Tower, Gorakhpur, Uttar Pradesh",
   logoUrl: "/logo.png",
 
-  // CID salon ki Google Business Profile kholta hai. Verified Place ID mile to
-  // direct review URL (placeid=...) se replace kar dena.
-  googleReviewUrl: "https://maps.google.com/?cid=3748807842798407439",
+  // Direct Google review box link (Copy & Paste on Google button isi par khulta hai)
+  googleReviewUrl: "https://g.page/r/CQ-PMvnecAY0EBM/review",
   mapsDirectionUrl: "https://maps.google.com/?cid=3748807842798407439",
   mapSearch:
     "Iconic Luxury Unisex Salon & Academy, Golghar, near Mangalam Tower, Gorakhpur, Uttar Pradesh",
@@ -23,7 +22,8 @@ const CLIENT_CONFIG = {
   // Neeche ke khali hain, details milte hi daal dena to icon apne aap dikhne lagega
   phone: "+919580997664",
   cleanPhone: "919580997664",
-  instagramUrl: "",
+  instagramUrl:
+    "https://www.instagram.com/iconicluxuryunisexsalon?dlrf=MWVxYW4xZWsxYWY4eQ==",
   facebookUrl: "",
   websiteUrl: "",
   youtubeUrl: "",
@@ -1363,18 +1363,28 @@ END:VCARD`;
         .map-disc:hover { background: #ea4335; border-color: #ea4335; }
         .map-disc:hover svg { stroke: #ffffff; }
 
-        .insta-disc:hover {
+        /* Instagram: hamesha official gradient colors mein dikhega */
+        .insta-disc {
           background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
           border-color: transparent;
         }
 
-        .insta-disc:hover svg { stroke: #ffffff; }
+        .insta-disc svg { stroke: #ffffff; }
+
+        .insta-disc:hover { filter: brightness(1.08); }
 
         .wa-channel-disc:hover { background: #25d366; border-color: #25d366; }
         .wa-channel-disc:hover svg { stroke: #ffffff; }
 
-        .fb-disc:hover { background: #1877f2; border-color: #1877f2; }
-        .fb-disc:hover svg { stroke: #ffffff; }
+        /* Facebook: hamesha official blue mein dikhega */
+        .fb-disc {
+          background: #1877f2;
+          border-color: #1877f2;
+        }
+
+        .fb-disc svg { stroke: #ffffff; }
+
+        .fb-disc:hover { filter: brightness(1.08); }
 
         .yt-disc:hover { background: #ff0000; border-color: #ff0000; }
         .yt-disc:hover svg { stroke: #ffffff; color: #ffffff; }
