@@ -975,6 +975,29 @@ END:VCARD`;
               )}
 
             </div>
+
+            {/* Direct Call to Salon - Full Width Shining Button */}
+            <a
+              href={`tel:${CLIENT_CONFIG.phone}`}
+              className="direct-call-btn"
+              aria-label="Direct call to salon"
+            >
+              <span className="direct-call-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+              </span>
+              <span className="direct-call-text">Direct Call to Salon</span>
+              <span className="direct-call-shine" aria-hidden="true"></span>
+            </a>
+
           </div>
         </div>
 
@@ -2050,6 +2073,186 @@ END:VCARD`;
         .yt-disc:hover svg {
           stroke: #ffffff;
           color: #ffffff;
+        }
+
+        /* =========================================
+           DIRECT CALL TO SALON - SHINING 3D BUTTON
+           ========================================= */
+
+        .direct-call-btn {
+          position: relative;
+          overflow: hidden;
+          isolation: isolate;
+
+          width: 100%;
+          height: 54px;
+          border-radius: 999px;
+          box-sizing: border-box;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+
+          text-decoration: none !important;
+          cursor: pointer;
+          margin-top: 2px;
+
+          background: linear-gradient(
+            145deg,
+            #fff0b8 0%,
+            #f5c85a 28%,
+            #d99a2b 62%,
+            #a96d14 100%
+          );
+
+          border: 1px solid #b97b1a;
+          color: #3a2306;
+
+          box-shadow:
+            0 9px 16px rgba(169, 109, 20, 0.34),
+            0 3px 6px rgba(var(--c-primary-rgb), 0.18),
+            0 0 18px rgba(245, 200, 90, 0.45),
+            inset 0 2px 2px rgba(255, 255, 255, 0.85),
+            inset 0 -3px 4px rgba(120, 70, 5, 0.35);
+
+          -webkit-tap-highlight-color: transparent;
+
+          animation: directCallGlow 2.6s ease-in-out infinite;
+
+          transition:
+            transform 0.16s ease,
+            filter 0.18s ease;
+        }
+
+        /* Upar ki glossy highlight */
+        .direct-call-btn::before {
+          content: "";
+          position: absolute;
+          top: 3px;
+          left: 14px;
+          right: 14px;
+          height: 42%;
+          border-radius: 999px;
+          background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.60),
+            rgba(255, 255, 255, 0)
+          );
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        /* Shining sweep effect */
+        .direct-call-shine {
+          position: absolute;
+          top: -20%;
+          left: -60%;
+          width: 38%;
+          height: 140%;
+          background: linear-gradient(
+            100deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.85) 50%,
+            rgba(255, 255, 255, 0) 100%
+          );
+          transform: skewX(-20deg);
+          animation: directCallShine 3s ease-in-out infinite;
+          pointer-events: none;
+          z-index: 2;
+        }
+
+        @keyframes directCallShine {
+          0% { left: -60%; }
+          55%, 100% { left: 130%; }
+        }
+
+        @keyframes directCallGlow {
+          0%, 100% {
+            box-shadow:
+              0 9px 16px rgba(169, 109, 20, 0.34),
+              0 3px 6px rgba(var(--c-primary-rgb), 0.18),
+              0 0 14px rgba(245, 200, 90, 0.35),
+              inset 0 2px 2px rgba(255, 255, 255, 0.85),
+              inset 0 -3px 4px rgba(120, 70, 5, 0.35);
+          }
+          50% {
+            box-shadow:
+              0 9px 18px rgba(169, 109, 20, 0.40),
+              0 3px 6px rgba(var(--c-primary-rgb), 0.18),
+              0 0 26px rgba(255, 213, 107, 0.75),
+              inset 0 2px 2px rgba(255, 255, 255, 0.85),
+              inset 0 -3px 4px rgba(120, 70, 5, 0.35);
+          }
+        }
+
+        .direct-call-icon {
+          position: relative;
+          z-index: 3;
+
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+
+          display: grid;
+          place-items: center;
+
+          background: linear-gradient(145deg, #5a3a0c, #2e1c04);
+          color: #ffe9a8;
+
+          box-shadow:
+            0 3px 6px rgba(58, 35, 6, 0.40),
+            inset 0 1px 1px rgba(255, 255, 255, 0.30);
+        }
+
+        .direct-call-icon svg {
+          width: 16px;
+          height: 16px;
+          stroke: currentColor;
+          animation: directCallRing 2.2s ease-in-out infinite;
+          transform-origin: center;
+        }
+
+        @keyframes directCallRing {
+          0%, 60%, 100% { transform: rotate(0deg); }
+          66% { transform: rotate(-14deg); }
+          72% { transform: rotate(12deg); }
+          78% { transform: rotate(-10deg); }
+          84% { transform: rotate(8deg); }
+          90% { transform: rotate(0deg); }
+        }
+
+        .direct-call-text {
+          position: relative;
+          z-index: 3;
+
+          font-size: 13px;
+          font-weight: 800;
+          letter-spacing: 0.5px;
+          color: #3a2306;
+          text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+        }
+
+        .direct-call-btn:hover {
+          transform: translateY(-2px);
+          filter: brightness(1.05);
+        }
+
+        .direct-call-btn:active {
+          transform: translateY(2px) scale(0.985);
+        }
+
+        .direct-call-btn:focus-visible {
+          outline: 2px solid var(--c-primary);
+          outline-offset: 3px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .direct-call-btn,
+          .direct-call-shine,
+          .direct-call-icon svg {
+            animation: none !important;
+          }
         }
 
         /* =========================================
